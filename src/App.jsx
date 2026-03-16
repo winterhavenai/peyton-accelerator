@@ -1,8 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 
-// ============================================================
-// QUOTE LIBRARY — tagged from LB_Quote_Library_Master
-// ============================================================
 const QUOTES = {
   day1: { text: "We like to think of our champions and idols as superheroes who were born different from us. We don't like to think of them as relatively ordinary people who made themselves extraordinary.", author: "Carol Dweck" },
   day2: { text: "I fear not the man who has practiced 10,000 kicks once, but I fear the man who has practiced one kick 10,000 times.", author: "Bruce Lee" },
@@ -20,595 +17,648 @@ const QUOTES = {
   wisdom: { text: "How one reacts to hostility is a strong evidence of wisdom. Maintain a cool, calm, and collected demeanor at all times.", author: "Cato the Elder" },
 };
 
-// ============================================================
-// 90-DAY CURRICULUM
-// ============================================================
-const CURRICULUM = {
-  // WEEK 1-5: SPARK Onramp (Days 1-5)
-  1:  { phase: "SPARK", day: 1, week: 1, title: "SEE IT — Discover AI Through Cybersecurity", quote: QUOTES.day1, mission: "Ask Claude to explain the cybersecurity landscape in 2026. What are the top threats? What does a day in the life of a security analyst look like? What skills pay the most? Have a real conversation — argue, push back, go deep.", deliverable: "Your first AI conversation about cybersecurity — saved and printed.", tools: ["Claude.ai", "Perplexity AI"], badge: null, duration: 60 },
-  2:  { phase: "SPARK", day: 2, week: 1, title: "PROMPT IT — Learn to Talk to AI Like an Analyst", quote: QUOTES.day2, mission: "Master the 3-Part Prompt Formula: Context + Request + Format. Practice prompting Claude to explain attack vectors, write threat summaries, and analyze vulnerabilities. Build your first 5-prompt cybersecurity library.", deliverable: "Your Personal Cybersecurity Prompt Library — 5 reusable prompts.", tools: ["Claude.ai"], badge: null, duration: 60 },
-  3:  { phase: "SPARK", day: 3, week: 1, title: "APPLY IT — Build Your First Real Security Asset", quote: QUOTES.day3, mission: "Choose one: (A) Write an AI-assisted threat report on a real recent data breach. (B) Build a personal cybersecurity study plan for UCF freshman year. (C) Create a network security checklist for your home lab.", deliverable: "A document you could show a UCF professor on Day 1.", tools: ["Claude.ai", "Google Docs"], badge: null, duration: 60 },
-  4:  { phase: "SPARK", day: 4, week: 1, title: "REMIX IT — Explore the Cybersecurity AI Ecosystem", quote: QUOTES.day4, mission: "Discover the tools used by real security professionals: TryHackMe for CTF challenges, GitHub Copilot for security scripting, Kali Linux concepts, Shodan for network intelligence. Use Claude to explain each one.", deliverable: "Your Personal Cybersecurity Tool Stack document.", tools: ["Claude.ai", "TryHackMe", "GitHub"], badge: null, duration: 60 },
-  5:  { phase: "SPARK", day: 5, week: 1, title: "KEEP IT GOING — Design Your 90-Day Plan", quote: QUOTES.day5, mission: "Build your pre-UCF AI practice plan. One hour per day, structured across 90 days. Use Claude as your planning partner. Write your personal commitment statement.", deliverable: "Your 90-Day Cybersecurity Accelerator Plan + Personal Commitment.", tools: ["Claude.ai"], badge: "⚡ The SPARK — 5-Day SPARK Framework Complete", duration: 60 },
-
-  // WEEK 2: Foundations
-  6:  { phase: "Foundation", day: 6, week: 2, title: "Networking Fundamentals with AI", quote: QUOTES.growth, mission: "Use Claude to master OSI model, TCP/IP, DNS, HTTP/HTTPS. Ask it to explain each layer like you're a curious UCF freshman. Then quiz yourself by having Claude ask YOU questions.", deliverable: "Networking concepts summary in your own words.", tools: ["Claude.ai"], badge: null, duration: 60 },
-  7:  { phase: "Foundation", day: 7, week: 2, title: "Linux Command Line Basics", quote: QUOTES.excellence, mission: "Learn the 20 most important Linux commands for cybersecurity. Use Claude to explain each one with real-world security use cases. Practice in a terminal if you have access.", deliverable: "Your Linux Command Cheat Sheet.", tools: ["Claude.ai", "Terminal/WSL"], badge: null, duration: 60 },
-  8:  { phase: "Foundation", day: 8, week: 2, title: "Cryptography Fundamentals", quote: QUOTES.wisdom, mission: "Ask Claude to explain encryption, hashing, and digital signatures using real examples. How does HTTPS work? What is a hash collision? Why does password salting matter?", deliverable: "Cryptography concept map.", tools: ["Claude.ai"], badge: null, duration: 60 },
-  9:  { phase: "Foundation", day: 9, week: 2, title: "Threat Landscape — Real Attacks in 2026", quote: QUOTES.mindset, mission: "Research the top 5 most significant cyberattacks of the last 2 years using Perplexity. Use Claude to analyze what went wrong and what defenders could have done differently.", deliverable: "Threat analysis report — 2 attacks in detail.", tools: ["Claude.ai", "Perplexity AI"], badge: null, duration: 60 },
-  10: { phase: "Foundation", day: 10, week: 2, title: "Python for Security — Your First Script", quote: QUOTES.courage, mission: "Use Claude to write your first Python security script — a simple port scanner or password strength checker. Understand every line. Modify it. Break it. Fix it.", deliverable: "Your first working Python security script.", tools: ["Claude.ai", "Python/Replit"], badge: null, duration: 60 },
-
-  // WEEK 3
-  11: { phase: "Foundation", day: 11, week: 3, title: "OWASP Top 10 — Web Vulnerabilities", quote: QUOTES.resilience, mission: "The OWASP Top 10 is the Bible of web security. Use Claude to walk you through each one with real examples. Understand SQL injection, XSS, and broken authentication.", deliverable: "OWASP Top 10 summary with real-world examples.", tools: ["Claude.ai"], badge: null, duration: 60 },
-  12: { phase: "Foundation", day: 12, week: 3, title: "Your First CTF Challenge on TryHackMe", quote: QUOTES.action, mission: "Create a TryHackMe account. Start the 'Pre-Security' path. Complete your first room. Use Claude as your tutor when you get stuck — describe what you see and ask for guidance.", deliverable: "First TryHackMe room completed.", tools: ["TryHackMe", "Claude.ai"], badge: null, duration: 60 },
-  13: { phase: "Foundation", day: 13, week: 3, title: "Social Engineering — The Human Attack Surface", quote: QUOTES.mastery, mission: "Study phishing, pretexting, and social engineering attacks. Use Claude to roleplay both sides: attacker and defender. How would you defend your family from a phishing attack today?", deliverable: "Social engineering defense guide for your family.", tools: ["Claude.ai"], badge: null, duration: 60 },
-  14: { phase: "Foundation", day: 14, week: 3, title: "Week 2-3 Review + Portfolio Update", quote: QUOTES.persistence, mission: "Review everything you built in weeks 2-3. Ask Claude to quiz you on weak areas. Update your portfolio document with new skills and artifacts.", deliverable: "Portfolio document updated — Version 2.", tools: ["Claude.ai"], badge: null, duration: 60 },
-  15: { phase: "Foundation", day: 15, week: 3, title: "Firewalls, IDS, and Network Defense", quote: QUOTES.day3, mission: "Use Claude to explain firewalls, intrusion detection systems, and VPNs. How does a SOC analyst use these tools daily? Design a basic network defense architecture.", deliverable: "Network defense architecture diagram + explanation.", tools: ["Claude.ai"], badge: "🔍 The Analyst — First Security Research Complete", duration: 60 },
-
-  // WEEKS 4-8: Builder Phase
-  16: { phase: "Builder", day: 16, week: 4, title: "Setting Up Your Security Lab", quote: QUOTES.day1, mission: "Design your personal security lab environment. Use Claude to build a shopping list or virtual setup plan using free tools: VirtualBox, Kali Linux, Metasploitable.", deliverable: "Your personal security lab setup guide.", tools: ["Claude.ai", "VirtualBox"], badge: null, duration: 60 },
-  17: { phase: "Builder", day: 17, week: 4, title: "Vulnerability Scanning Basics", quote: QUOTES.excellence, mission: "Learn Nmap and vulnerability scanning concepts. Use Claude to explain what each scan type reveals. Practice scanning your own lab environment.", deliverable: "Vulnerability scan report from your lab.", tools: ["Claude.ai", "Nmap"], badge: null, duration: 60 },
-  18: { phase: "Builder", day: 18, week: 4, title: "Write Your First Vulnerability Report", quote: QUOTES.day3, mission: "A vulnerability report is the core deliverable of a security professional. Use Claude to help you write a professional-quality report on a known vulnerability (use a public CVE).", deliverable: "Your first professional vulnerability report.", tools: ["Claude.ai"], badge: "🐧 The Linux Learner — Terminal Skills Established", duration: 60 },
-  19: { phase: "Builder", day: 19, week: 5, title: "Incident Response Framework", quote: QUOTES.mindset, mission: "Study the NIST incident response framework: Prepare, Detect, Contain, Eradicate, Recover, Learn. Use Claude to walk through a real incident scenario step by step.", deliverable: "Incident response playbook for one attack scenario.", tools: ["Claude.ai"], badge: null, duration: 60 },
-  20: { phase: "Builder", day: 20, week: 5, title: "Cloud Security Fundamentals", quote: QUOTES.growth, mission: "AWS, Azure, and GCP are where modern infrastructure lives. Use Claude to explain the shared responsibility model, IAM, and the top cloud security misconfigurations.", deliverable: "Cloud security checklist — 10 must-do configurations.", tools: ["Claude.ai", "AWS Free Tier"], badge: null, duration: 60 },
-  21: { phase: "Builder", day: 21, week: 5, title: "AI in Cybersecurity — Both Sides", quote: QUOTES.wisdom, mission: "AI is transforming both attack and defense. Use Claude and Perplexity to research: How are attackers using AI? How are defenders using AI? What does this mean for your career?", deliverable: "AI in cybersecurity research brief.", tools: ["Claude.ai", "Perplexity AI"], badge: null, duration: 60 },
-  22: { phase: "Builder", day: 22, week: 6, title: "Build a Security Automation Script", quote: QUOTES.action, mission: "Use Claude to help you write a Python script that automates a security task: log analysis, port scanning, or checking for weak passwords. This is real work.", deliverable: "Working Python automation script.", tools: ["Claude.ai", "Python"], badge: null, duration: 60 },
-  23: { phase: "Builder", day: 23, week: 6, title: "CTF Deep Dive — TryHackMe Level 2", quote: QUOTES.resilience, mission: "Complete 3 more TryHackMe rooms in the Pre-Security or Jr Penetration Tester path. Document what you learned and where you got stuck.", deliverable: "3 rooms completed + learning log.", tools: ["TryHackMe", "Claude.ai"], badge: "🏴 The Flag Catcher — First CTF Challenges Complete", duration: 60 },
-  24: { phase: "Builder", day: 24, week: 6, title: "Build Your GitHub Security Portfolio", quote: QUOTES.courage, mission: "Create a GitHub profile and start uploading your security scripts and reports. Use Claude to write your README files professionally. This is what recruiters and professors will see.", deliverable: "GitHub profile live with 3+ security projects.", tools: ["GitHub", "Claude.ai"], badge: null, duration: 60 },
-  25: { phase: "Builder", day: 25, week: 7, title: "Certifications Roadmap — Your UCF Strategy", quote: QUOTES.persistence, mission: "Map your certification path: CompTIA Security+, CEH, OSCP. Use Claude to build a realistic study plan that aligns with UCF's cybersecurity curriculum.", deliverable: "Your 2-year certification roadmap.", tools: ["Claude.ai"], badge: null, duration: 60 },
-  26: { phase: "Builder", day: 26, week: 7, title: "Mock Security Interview with Claude", quote: QUOTES.mastery, mission: "Claude will interview you for a cybersecurity internship. Answer technical and behavioral questions. Review your performance and identify gaps.", deliverable: "Mock interview transcript + improvement plan.", tools: ["Claude.ai"], badge: null, duration: 60 },
-  27: { phase: "Builder", day: 27, week: 7, title: "Threat Intelligence Research", quote: QUOTES.day4, mission: "Use Perplexity to research the current threat actor landscape. Pick one APT group (Advanced Persistent Threat) and build a threat intelligence brief using Claude.", deliverable: "APT threat intelligence brief.", tools: ["Claude.ai", "Perplexity AI"], badge: null, duration: 60 },
-  28: { phase: "Builder", day: 28, week: 8, title: "Build a Personal Security Policy", quote: QUOTES.excellence, mission: "Write a personal and family cybersecurity policy. Password management, device security, phishing awareness, backup strategy. Use Claude to make it professional.", deliverable: "Personal security policy document.", tools: ["Claude.ai"], badge: null, duration: 60 },
-  29: { phase: "Builder", day: 29, week: 8, title: "Reverse Engineering Concepts", quote: QUOTES.growth, mission: "Introduction to malware analysis and reverse engineering concepts. Use Claude to explain static vs dynamic analysis, assembly basics, and tools like Ghidra.", deliverable: "Reverse engineering concepts summary.", tools: ["Claude.ai"], badge: null, duration: 60 },
-  30: { phase: "Builder", day: 30, week: 8, title: "30-DAY GRADUATION — Builder Badge Earned", quote: QUOTES.day5, mission: "Review your entire journey. Update your portfolio. Write a reflection: What have you learned? Where are your gaps? What are your top 3 goals for the next 60 days?", deliverable: "30-Day portfolio review + Builder graduation document.", tools: ["Claude.ai"], badge: "💻 The Builder — 30-Day Foundation Complete", duration: 60 },
-
-  // DAYS 31-60: Launch Phase
-  31: { phase: "Launch", day: 31, week: 9, title: "Deep Dive — Penetration Testing Methodology", quote: QUOTES.day1, mission: "Study the full pentest methodology: Reconnaissance, Scanning, Exploitation, Post-Exploitation, Reporting. Use Claude to walk through each phase with real examples.", deliverable: "Pentest methodology guide in your own words.", tools: ["Claude.ai"], badge: null, duration: 60 },
-  32: { phase: "Launch", day: 32, week: 9, title: "Ethical Hacking Ethics & Law", quote: QUOTES.wisdom, mission: "Understand the legal framework around ethical hacking: CFAA, bug bounty programs, responsible disclosure. Use Claude to explore real cases where the line was crossed.", deliverable: "Ethics & legal framework summary.", tools: ["Claude.ai"], badge: null, duration: 60 },
-  33: { phase: "Launch", day: 33, week: 9, title: "Bug Bounty Programs — Get Paid to Hack", quote: QUOTES.courage, mission: "Explore HackerOne and Bugcrowd. Use Claude to understand how bug bounty programs work, what types of vulnerabilities pay the most, and how to write a quality report.", deliverable: "Bug bounty strategy document + first target selected.", tools: ["Claude.ai", "HackerOne"], badge: null, duration: 60 },
-  34: { phase: "Launch", day: 34, week: 10, title: "Advanced Python — Security Automation", quote: QUOTES.excellence, mission: "Level up your Python. Use Claude to help you build a more complex security tool: a web scraper for OSINT, a log analyzer, or a basic IDS prototype.", deliverable: "Advanced Python security project.", tools: ["Claude.ai", "Python"], badge: null, duration: 60 },
-  35: { phase: "Launch", day: 35, week: 10, title: "Network Traffic Analysis", quote: QUOTES.mastery, mission: "Learn Wireshark fundamentals. Capture and analyze network traffic. Use Claude to explain what you're seeing in packet captures.", deliverable: "Network traffic analysis report.", tools: ["Claude.ai", "Wireshark"], badge: null, duration: 60 },
-  // Days 36-59 continue the Launch phase with increasing complexity
-  36: { phase: "Launch", day: 36, week: 10, title: "Web Application Security Testing", quote: QUOTES.action, mission: "Set up DVWA (Damn Vulnerable Web Application) and practice web attacks in a safe environment. Use Claude to guide you through SQL injection and XSS attacks.", deliverable: "Web application attack documentation.", tools: ["Claude.ai", "DVWA"], badge: null, duration: 60 },
-  37: { phase: "Launch", day: 37, week: 11, title: "Build Your First Security Tool — Public Release", quote: QUOTES.growth, mission: "Take your best Python script and polish it for public release. Write documentation, add error handling, publish to GitHub with a professional README.", deliverable: "Public GitHub security tool release.", tools: ["Claude.ai", "GitHub"], badge: null, duration: 60 },
-  38: { phase: "Launch", day: 38, week: 11, title: "Security+ Exam Prep — Domain 1", quote: QUOTES.persistence, mission: "Start Security+ prep. Domain 1: Threats, Attacks, and Vulnerabilities. Use Claude as your tutor, Anki for flashcards, and practice test questions.", deliverable: "Domain 1 study guide + practice quiz results.", tools: ["Claude.ai", "Anki"], badge: null, duration: 60 },
-  39: { phase: "Launch", day: 39, week: 11, title: "Security+ Exam Prep — Domain 2", quote: QUOTES.resilience, mission: "Domain 2: Technologies and Tools. Use Claude to explain every technology and quiz you on it. Focus on areas where you score below 80%.", deliverable: "Domain 2 mastery score above 80%.", tools: ["Claude.ai"], badge: null, duration: 60 },
-  40: { phase: "Launch", day: 40, week: 12, title: "Security+ Exam Prep — Domains 3-4", quote: QUOTES.courage, mission: "Domains 3-4: Architecture, Design, Identity and Access Management. Build concept maps for each domain using Claude.", deliverable: "Domains 3-4 concept maps.", tools: ["Claude.ai"], badge: null, duration: 60 },
-  41: { phase: "Launch", day: 41, week: 12, title: "Security+ Exam Prep — Domains 5-6", quote: QUOTES.excellence, mission: "Domains 5-6: Risk Management, Cryptography and PKI. Final push through all Security+ content. Take a full practice exam.", deliverable: "Full practice exam score 80%+.", tools: ["Claude.ai", "Professor Messer"], badge: null, duration: 60 },
-  42: { phase: "Launch", day: 42, week: 12, title: "Connect with the Cybersecurity Community", quote: QUOTES.day5, mission: "Join the cybersecurity community: LinkedIn profile, Twitter/X security follows, join DEF CON Discord, find your nearest BSides event. Use Claude to write your professional bio.", deliverable: "LinkedIn profile live + community memberships.", tools: ["Claude.ai", "LinkedIn"], badge: null, duration: 60 },
-  43: { phase: "Launch", day: 43, week: 13, title: "Internship Research — UCF Opportunities", quote: QUOTES.mindset, mission: "Research cybersecurity internships in Central Florida and remote. Use Claude to tailor your resume for each opportunity. Target at least 5 specific companies.", deliverable: "Internship target list + tailored resume.", tools: ["Claude.ai", "LinkedIn"], badge: null, duration: 60 },
-  44: { phase: "Launch", day: 44, week: 13, title: "AI-Assisted Research Paper", quote: QUOTES.wisdom, mission: "Write a 3-page research paper on an emerging cybersecurity topic: AI-powered attacks, zero-trust architecture, or quantum cryptography. Use Claude as your research partner.", deliverable: "3-page research paper — UCF ready.", tools: ["Claude.ai", "Perplexity AI"], badge: null, duration: 60 },
-  45: { phase: "Launch", day: 45, week: 13, title: "Mid-Point Review — 45 Days In", quote: QUOTES.day2, mission: "Comprehensive review. What have you built? Where are your gaps? What do the next 45 days look like? Update your portfolio and share a summary with your dad.", deliverable: "45-Day progress report + updated portfolio.", tools: ["Claude.ai"], badge: "🎯 The Pioneer — 45-Day Milestone", duration: 60 },
-  // Days 46-90: UCF Launch Phase
-  46: { phase: "UCF Ready", day: 46, week: 14, title: "UCF Cybersecurity Curriculum Preview", quote: QUOTES.action, mission: "Research UCF's cybersecurity program requirements. Use Claude to map your current skills to each course. Identify where you're already ahead.", deliverable: "UCF curriculum gap analysis.", tools: ["Claude.ai"], badge: null, duration: 60 },
-  47: { phase: "UCF Ready", day: 47, week: 14, title: "Professor Research — Know Your Faculty", quote: QUOTES.growth, mission: "Research UCF's cybersecurity faculty. Find 3 professors whose research interests you. Use Claude to help you write an introduction email to one of them.", deliverable: "Faculty research summary + one email drafted.", tools: ["Claude.ai", "Perplexity AI"], badge: null, duration: 60 },
-  48: { phase: "UCF Ready", day: 48, week: 14, title: "Build Your Personal Brand", quote: QUOTES.excellence, mission: "You are Peyton Bowers, cybersecurity professional in training. Use Claude to craft your personal brand statement, update all profiles consistently, and plan your content strategy.", deliverable: "Personal brand statement + consistent profiles.", tools: ["Claude.ai", "LinkedIn", "GitHub"], badge: null, duration: 60 },
-  49: { phase: "UCF Ready", day: 49, week: 15, title: "Advanced CTF — Intermediate Challenges", quote: QUOTES.resilience, mission: "Level up on TryHackMe or HackTheBox. Attempt 3 intermediate-level challenges. Document your methodology for each one.", deliverable: "3 intermediate CTF solutions documented.", tools: ["TryHackMe", "HackTheBox", "Claude.ai"], badge: null, duration: 60 },
-  50: { phase: "UCF Ready", day: 50, week: 15, title: "Build Your Final Capstone Project", quote: QUOTES.mastery, mission: "Design your 90-day capstone: a comprehensive security assessment of a practice target, a security tool, or a research paper. This becomes your flagship portfolio piece.", deliverable: "Capstone project proposal + first milestone.", tools: ["Claude.ai"], badge: null, duration: 60 },
-  60: { phase: "UCF Ready", day: 60, week: 17, title: "60-DAY REVIEW — Launch Badge Earned", quote: QUOTES.day5, mission: "Complete portfolio review. Mock interview with Claude. Update your 90-day plan. You have 30 days until UCF. What are the 3 most important things to accomplish?", deliverable: "60-Day portfolio + Launch graduation document.", tools: ["Claude.ai"], badge: "🚀 The Launch — 60-Day Milestone Complete", duration: 60 },
-  90: { phase: "UCF Ready", day: 90, week: 25, title: "90-DAY GRADUATION — UCF READY", quote: QUOTES.day5, mission: "You made it. Review your entire journey. Print your portfolio. Write a letter to your UCF freshman self. You are not starting from zero. You are starting from experience.", deliverable: "Complete portfolio + UCF Ready graduation document + Personal Launch Brief.", tools: ["Claude.ai"], badge: "🎓 UCF Ready — 90-Day Graduation Complete", duration: 60 },
+const DAY_SKILLS = {
+  1: ["Understands the 2026 cybersecurity threat landscape","Knows what a security analyst does every day","Had first real AI conversation about cybersecurity"],
+  2: ["Masters the 3-Part Prompt Formula: Context + Request + Format","Built a personal cybersecurity prompt library","Can prompt AI to analyze attack vectors"],
+  3: ["Can write an AI-assisted threat report","Built first real security document","Can explain a real-world breach using AI analysis"],
+  4: ["Knows the professional cybersecurity tool stack","Understands TryHackMe, GitHub, Kali Linux, Shodan","Can map tools to real security tasks"],
+  5: ["Built a 90-day learning plan","Wrote a personal commitment statement","Understands the full SPARK framework"],
+  6: ["Can explain the OSI model in plain English","Understands TCP/IP, DNS, HTTP/HTTPS","Can explain how data moves across networks"],
+  7: ["Knows the 20 most important Linux commands for security","Can navigate a Linux terminal","Created a Linux command cheat sheet","PROVEN IN REAL TERMINAL: ran live Linux commands"],
+  8: ["Understands encryption, hashing, and digital signatures","Can explain how HTTPS works","Knows what password salting does and why it matters"],
+  9: ["Can analyze a real cyberattack step by step","Understands what defenders could have done differently","Knows the top threat actors and their methods"],
+  10: ["Wrote a working Python security script","Can read and modify Python code","Built a port scanner or password checker from scratch"],
+  11: ["Knows the OWASP Top 10 web vulnerabilities","Can explain SQL injection, XSS, and broken auth","Understands why most web apps get hacked"],
+  12: ["Completed first TryHackMe room","PROVEN HANDS-ON: live cybersecurity challenge completed","Has a TryHackMe account and active progress"],
+  13: ["Understands phishing, pretexting, and social engineering","Can defend family from social attacks","Knows why humans are the biggest security vulnerability"],
+  14: ["Portfolio updated with 2 weeks of skills","Can be quizzed on any concept from weeks 2-3","Has 14 days of documented consistent learning"],
+  15: ["Can explain firewalls, IDS, and VPNs","Understands how a SOC analyst uses these tools","Designed a basic network defense architecture"],
+  18: ["Can write a professional vulnerability report","Understands CVE format and severity ratings","Has a report that looks like real security work"],
+  23: ["PROVEN IN CTF: completed TryHackMe challenges in live environment","Can document methodology for a security challenge","Understands CTF format used by professional security teams"],
+  30: ["PROVEN ON GITHUB: published real security portfolio","30 consecutive days of 1-hour cybersecurity study","Has more security knowledge than most UCF graduates entering freshman year"],
 };
 
-// Get today's curriculum entry
-function getCurriculum(dayNum) {
-  if (CURRICULUM[dayNum]) return CURRICULUM[dayNum];
-  // Fill gaps with generic daily sessions
-  const phase = dayNum <= 5 ? "SPARK" : dayNum <= 30 ? "Foundation" : dayNum <= 60 ? "Builder" : "UCF Ready";
-  const quotes = Object.values(QUOTES);
-  return {
-    phase,
-    day: dayNum,
-    week: Math.ceil(dayNum / 7),
-    title: `Day ${dayNum} — ${phase} Session`,
-    quote: quotes[dayNum % quotes.length],
-    mission: "Continue your daily cybersecurity practice. Use Claude to explore one new concept, reinforce one existing skill, and document one insight in your journal.",
-    deliverable: "Daily learning log entry.",
-    tools: ["Claude.ai"],
-    badge: null,
-    duration: 60,
-  };
+const OUTSIDE_PROJECTS = {
+  7: {
+    mission: "Leave the app. Open a terminal (Mac: Terminal app, Windows: PowerShell or search 'cmd'). Run these 4 commands one at a time: pwd — then ls — then cd .. — then whoami. Screenshot the results or copy/paste what you see. Come back and paste it here.",
+    placeholder: "Paste your terminal output here, or describe what each command showed you...",
+    cipherEval: "evaluate this Linux terminal output from Peyton, a 17-year-old cybersecurity student. Tell him specifically what each command revealed, confirm he understands it, and explain why these commands matter in real security work. Make it affirming and specific."
+  },
+  12: {
+    mission: "Leave the app. Go to tryhackme.com — create a free account if you don't have one. Click 'Learn' then find the 'Pre-Security' path. Complete at least ONE room all the way through. Come back and paste the room name and your score or what you learned.",
+    placeholder: "Room name, score, and what you actually learned from completing it...",
+    cipherEval: "evaluate this TryHackMe room completion from Peyton, a 17-year-old preparing for UCF cybersecurity. Name the specific skills this proves. Tell him what a UCF professor would think. Make this feel like the milestone it is."
+  },
+  23: {
+    mission: "Leave the app. Go to tryhackme.com. Complete 2 more rooms in any path. For each room: write the name, your score, and 2 things you learned. Come back and paste all of it. This is your Flag Catcher proof.",
+    placeholder: "Room 1 name + score + 2 learnings. Room 2 name + score + 2 learnings...",
+    cipherEval: "evaluate these TryHackMe CTF results from Peyton. Be specific about what skills each room proved. This is his Flag Catcher badge moment — make the affirmation powerful and name exactly what he can now do."
+  },
+  30: {
+    mission: "Leave the app. Go to github.com — create a free account if needed. Create a new repository called 'security-portfolio'. Upload at least one script, document, or project from your last 30 days. Add a README explaining what it does. Come back and paste your GitHub profile link or repo link.",
+    placeholder: "Your GitHub link + describe what you uploaded and what it does...",
+    cipherEval: "evaluate this GitHub portfolio submission from Peyton at his 30-day milestone. Confirm what the work proves. Tell him what a UCF professor or security recruiter would think seeing this. Name the specific skills it demonstrates. Make it feel like graduation."
+  },
+};
+
+const CURRICULUM = {
+  1:  { phase:"SPARK",     day:1,  week:1, title:"SEE IT — Discover AI Through Cybersecurity",    quote:QUOTES.day1,       mission:"Ask Claude to explain the cybersecurity landscape in 2026. What are the top threats? What does a day in the life of a security analyst look like? What skills pay the most? Have a real conversation — argue, push back, go deep.", deliverable:"Your first AI conversation about cybersecurity — saved.", tools:["Claude.ai","Perplexity AI"], badge:null, duration:60 },
+  2:  { phase:"SPARK",     day:2,  week:1, title:"PROMPT IT — Learn to Talk to AI Like an Analyst", quote:QUOTES.day2,     mission:"Master the 3-Part Prompt Formula: Context + Request + Format. Practice prompting Claude to explain attack vectors, write threat summaries, and analyze vulnerabilities. Build your first 5-prompt cybersecurity library.", deliverable:"Your Personal Cybersecurity Prompt Library — 5 reusable prompts.", tools:["Claude.ai"], badge:null, duration:60 },
+  3:  { phase:"SPARK",     day:3,  week:1, title:"APPLY IT — Build Your First Real Security Asset", quote:QUOTES.day3,     mission:"Choose: (A) Write an AI-assisted threat report on a real recent breach. (B) Build a personal cybersecurity study plan for UCF freshman year. (C) Create a network security checklist for your home.", deliverable:"A document you could show a UCF professor on Day 1.", tools:["Claude.ai","Google Docs"], badge:null, duration:60 },
+  4:  { phase:"SPARK",     day:4,  week:1, title:"REMIX IT — Explore the Cybersecurity AI Ecosystem", quote:QUOTES.day4,   mission:"Discover the tools used by real security professionals: TryHackMe, GitHub Copilot, Kali Linux, Shodan. Use Claude to explain each one and how you'd use it.", deliverable:"Your Personal Cybersecurity Tool Stack document.", tools:["Claude.ai","TryHackMe","GitHub"], badge:null, duration:60 },
+  5:  { phase:"SPARK",     day:5,  week:1, title:"KEEP IT GOING — Design Your 90-Day Plan",        quote:QUOTES.day5,       mission:"Build your pre-UCF AI practice plan. One hour per day, structured across 90 days. Use Claude as your planning partner. Write your personal commitment statement.", deliverable:"Your 90-Day Plan + Personal Commitment.", tools:["Claude.ai"], badge:"⚡ The SPARK — 5-Day Onramp Complete", duration:60 },
+  6:  { phase:"Foundation",day:6,  week:2, title:"Networking Fundamentals with AI",                  quote:QUOTES.growth,     mission:"Use Claude to master OSI model, TCP/IP, DNS, HTTP/HTTPS. Ask it to explain each layer. Then quiz yourself — have Claude ask YOU the questions.", deliverable:"Networking concepts summary in your own words.", tools:["Claude.ai"], badge:null, duration:60 },
+  7:  { phase:"Foundation",day:7,  week:2, title:"Linux Command Line — First Real Terminal Session", quote:QUOTES.excellence, mission:"Learn the 20 most important Linux commands for cybersecurity with Claude. Then complete the OUTSIDE PROJECT — your first real terminal session with proof.", deliverable:"Linux Command Cheat Sheet + real terminal output.", tools:["Claude.ai","Terminal"], badge:null, duration:60 },
+  8:  { phase:"Foundation",day:8,  week:2, title:"Cryptography Fundamentals",                        quote:QUOTES.wisdom,     mission:"Ask Claude to explain encryption, hashing, and digital signatures. How does HTTPS work? What is a hash collision? Why does password salting matter?", deliverable:"Cryptography concept map.", tools:["Claude.ai"], badge:null, duration:60 },
+  9:  { phase:"Foundation",day:9,  week:2, title:"Threat Landscape — Real Attacks in 2026",          quote:QUOTES.mindset,    mission:"Research the top 5 significant cyberattacks of the last 2 years using Perplexity. Use Claude to analyze what went wrong and what defenders could have done.", deliverable:"Threat analysis report — 2 attacks in detail.", tools:["Claude.ai","Perplexity AI"], badge:null, duration:60 },
+  10: { phase:"Foundation",day:10, week:2, title:"Python for Security — Your First Script",          quote:QUOTES.courage,    mission:"Use Claude to write your first Python security script — a port scanner or password strength checker. Understand every line. Modify it. Break it. Fix it.", deliverable:"Your first working Python security script.", tools:["Claude.ai","Python/Replit"], badge:null, duration:60 },
+  11: { phase:"Foundation",day:11, week:3, title:"OWASP Top 10 — Web Vulnerabilities",               quote:QUOTES.resilience, mission:"The OWASP Top 10 is the Bible of web security. Use Claude to walk through each one with real examples. Understand SQL injection, XSS, and broken auth.", deliverable:"OWASP Top 10 summary with real-world examples.", tools:["Claude.ai"], badge:null, duration:60 },
+  12: { phase:"Foundation",day:12, week:3, title:"Your First CTF — TryHackMe Live",                  quote:QUOTES.action,     mission:"Learn what CTF challenges are with Claude. Then complete the OUTSIDE PROJECT — your first real TryHackMe room with proof.", deliverable:"First TryHackMe room completed and documented.", tools:["TryHackMe","Claude.ai"], badge:null, duration:60 },
+  13: { phase:"Foundation",day:13, week:3, title:"Social Engineering — The Human Attack Surface",    quote:QUOTES.mastery,    mission:"Study phishing, pretexting, and social engineering with Claude. Roleplay both sides: attacker and defender. Build a defense guide for your family.", deliverable:"Social engineering defense guide for your family.", tools:["Claude.ai"], badge:null, duration:60 },
+  14: { phase:"Foundation",day:14, week:3, title:"Week 2-3 Review + Portfolio Update",               quote:QUOTES.persistence,mission:"Review everything built in weeks 2-3. Have Claude quiz you on weak areas. Update your portfolio.", deliverable:"Portfolio updated — Version 2.", tools:["Claude.ai"], badge:null, duration:60 },
+  15: { phase:"Foundation",day:15, week:3, title:"Firewalls, IDS, and Network Defense",              quote:QUOTES.day3,       mission:"Use Claude to explain firewalls, IDS, and VPNs. How does a SOC analyst use these daily? Design a basic network defense architecture.", deliverable:"Network defense architecture + explanation.", tools:["Claude.ai"], badge:"🔍 The Analyst — First Security Research Complete", duration:60 },
+  16: { phase:"Builder",   day:16, week:4, title:"Setting Up Your Security Lab",                     quote:QUOTES.day1,       mission:"Design your personal security lab. Use Claude to build a setup plan using free tools: VirtualBox, Kali Linux, Metasploitable.", deliverable:"Your personal security lab setup guide.", tools:["Claude.ai","VirtualBox"], badge:null, duration:60 },
+  17: { phase:"Builder",   day:17, week:4, title:"Vulnerability Scanning Basics",                    quote:QUOTES.excellence, mission:"Learn Nmap and vulnerability scanning with Claude. Understand what each scan type reveals.", deliverable:"Vulnerability scan concepts + lab report.", tools:["Claude.ai","Nmap"], badge:null, duration:60 },
+  18: { phase:"Builder",   day:18, week:4, title:"Write Your First Vulnerability Report",            quote:QUOTES.day3,       mission:"A vulnerability report is the core deliverable of a security professional. Use Claude to write a professional report on a known CVE.", deliverable:"Your first professional vulnerability report.", tools:["Claude.ai"], badge:"🐧 The Linux Learner — Terminal Skills Established", duration:60 },
+  23: { phase:"Builder",   day:23, week:6, title:"CTF Deep Dive — TryHackMe Level 2 + Proof",       quote:QUOTES.resilience, mission:"Use Claude to prep for intermediate CTF challenges. Then complete the OUTSIDE PROJECT — 2 more TryHackMe rooms with documented proof.", deliverable:"2 CTF rooms completed + methodology documented.", tools:["TryHackMe","Claude.ai"], badge:"🏴 The Flag Catcher — CTF Challenges Complete", duration:60 },
+  30: { phase:"Builder",   day:30, week:8, title:"30-DAY GRADUATION — GitHub Portfolio Launch",      quote:QUOTES.day5,       mission:"Review your full journey. Complete the OUTSIDE PROJECT — publish your GitHub security portfolio. This is your first public proof of who you're becoming.", deliverable:"GitHub portfolio live + 30-Day graduation document.", tools:["Claude.ai","GitHub"], badge:"💻 The Builder — 30-Day Foundation Complete", duration:60 },
+  45: { phase:"UCF Ready", day:45, week:13,title:"Mid-Point — 45 Days Strong",                      quote:QUOTES.day2,       mission:"Comprehensive review. Portfolio update. Mock interview with Claude. Identify your top 3 gaps. Share progress with your dad.", deliverable:"45-Day progress report + updated portfolio.", tools:["Claude.ai"], badge:"🎯 The Pioneer — 45-Day Milestone", duration:60 },
+  60: { phase:"UCF Ready", day:60, week:17,title:"60-DAY REVIEW — Launch Milestone",                quote:QUOTES.day5,       mission:"Full portfolio review. Mock interview with Claude. Update your 90-day plan. You have 30 days until UCF.", deliverable:"60-Day portfolio + Launch document.", tools:["Claude.ai"], badge:"🚀 The Launch — 60-Day Milestone", duration:60 },
+  90: { phase:"UCF Ready", day:90, week:25,title:"90-DAY GRADUATION — UCF READY",                   quote:QUOTES.day5,       mission:"You made it. Review your journey. Print your portfolio. Write a letter to your UCF freshman self. You are not starting from zero.", deliverable:"Complete portfolio + UCF Ready graduation document.", tools:["Claude.ai"], badge:"🎓 UCF Ready — 90-Day Graduation Complete", duration:60 },
+};
+
+function getCurriculum(d) {
+  if (CURRICULUM[d]) return CURRICULUM[d];
+  const phase = d<=5?"SPARK":d<=30?"Foundation":d<=60?"Builder":"UCF Ready";
+  const qs = Object.values(QUOTES);
+  return { phase, day:d, week:Math.ceil(d/7), title:`Day ${d} — ${phase} Session`, quote:qs[d%qs.length], mission:"Use Claude to explore one new concept, reinforce one skill, and document one insight in your portfolio.", deliverable:"Daily learning log entry.", tools:["Claude.ai"], badge:null, duration:60 };
 }
 
-// ============================================================
-// BADGE SYSTEM
-// ============================================================
 const ALL_BADGES = [
-  { id: "seed",     icon: "🌱", name: "The Seed",         desc: "Started Day 1",           day: 1 },
-  { id: "spark",    icon: "⚡", name: "The SPARK",        desc: "Completed 5-Day Onramp",  day: 5 },
-  { id: "analyst",  icon: "🔍", name: "The Analyst",      desc: "First Security Research", day: 15 },
-  { id: "linux",    icon: "🐧", name: "The Linux Learner", desc: "Terminal Skills",         day: 18 },
-  { id: "flame",    icon: "🔥", name: "The 30-Day Flame", desc: "30 Consecutive Days",     day: 30 },
-  { id: "flag",     icon: "🏴", name: "The Flag Catcher", desc: "CTF Challenges Complete", day: 23 },
-  { id: "builder",  icon: "💻", name: "The Builder",      desc: "30-Day Foundation",       day: 30 },
-  { id: "pioneer",  icon: "🎯", name: "The Pioneer",      desc: "45-Day Milestone",        day: 45 },
-  { id: "launch",   icon: "🚀", name: "The Launch",       desc: "60-Day Milestone",        day: 60 },
-  { id: "ucf",      icon: "🎓", name: "UCF Ready",        desc: "90-Day Graduation",       day: 90 },
+  {id:"seed",   icon:"🌱",name:"The Seed",        desc:"Started Day 1",              day:1},
+  {id:"spark",  icon:"⚡",name:"The SPARK",       desc:"Completed 5-Day Onramp",    day:5},
+  {id:"analyst",icon:"🔍",name:"The Analyst",     desc:"First Security Research",   day:15},
+  {id:"linux",  icon:"🐧",name:"The Linux Learner",desc:"Terminal Skills Proven",   day:18},
+  {id:"flame",  icon:"🔥",name:"The 30-Day Flame",desc:"30 Consecutive Days",       day:30},
+  {id:"flag",   icon:"🏴",name:"The Flag Catcher",desc:"CTF Challenges Complete",   day:23},
+  {id:"builder",icon:"💻",name:"The Builder",     desc:"30-Day Foundation + GitHub",day:30},
+  {id:"pioneer",icon:"🎯",name:"The Pioneer",     desc:"45-Day Milestone",          day:45},
+  {id:"launch", icon:"🚀",name:"The Launch",      desc:"60-Day Milestone",          day:60},
+  {id:"ucf",    icon:"🎓",name:"UCF Ready",       desc:"90-Day Graduation",         day:90},
 ];
 
-// ============================================================
-// STYLES
-// ============================================================
-const styles = {
-  bg: "#0A0E1A",
-  card: "#0F1629",
-  border: "#1E2D4A",
-  accent: "#00D4FF",
-  gold: "#FFB300",
-  green: "#00FF88",
-  plum: "#8B5CF6",
-  text: "#E2E8F0",
-  muted: "#64748B",
-  danger: "#FF4444",
-};
+const C = { bg:"#0A0E1A", card:"#0F1629", border:"#1E2D4A", accent:"#00D4FF", gold:"#FFB300", green:"#00FF88", plum:"#8B5CF6", text:"#E2E8F0", muted:"#64748B" };
 
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap');
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: ${styles.bg}; color: ${styles.text}; font-family: 'Inter', sans-serif; min-height: 100vh; }
-  ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: ${styles.bg}; } ::-webkit-scrollbar-thumb { background: ${styles.border}; border-radius: 3px; }
-  .glow { box-shadow: 0 0 20px rgba(0, 212, 255, 0.3); }
-  .gold-glow { box-shadow: 0 0 20px rgba(255, 179, 0, 0.3); }
-  .pulse { animation: pulse 2s infinite; }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-  .slide-in { animation: slideIn 0.4s ease; }
-  @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-  .typing::after { content: '|'; animation: blink 1s infinite; }
-  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-  button { cursor: pointer; border: none; outline: none; font-family: 'Inter', sans-serif; transition: all 0.2s; }
-  button:hover { transform: translateY(-1px); }
-  button:active { transform: translateY(0); }
-  input, textarea { font-family: 'Inter', sans-serif; outline: none; }
-  .mono { font-family: 'JetBrains Mono', monospace; }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:${C.bg};color:${C.text};font-family:'Inter',sans-serif;min-height:100vh}
+  button{cursor:pointer;border:none;outline:none;font-family:'Inter',sans-serif;transition:all 0.2s}
+  button:hover{transform:translateY(-1px)}button:active{transform:translateY(0)}
+  input,textarea{font-family:'Inter',sans-serif;outline:none}
+  .si{animation:si 0.4s ease}@keyframes si{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .pu{animation:pu 1.6s infinite}@keyframes pu{0%,100%{opacity:1}50%{opacity:0.4}}
+  .gl{box-shadow:0 0 20px rgba(0,212,255,0.3)}
+  .gg{box-shadow:0 0 20px rgba(255,179,0,0.4)}
 `;
 
-// ============================================================
-// MAIN APP
-// ============================================================
 export default function App() {
-  const [screen, setScreen] = useState("welcome");
-  const [currentDay, setCurrentDay] = useState(() => parseInt(localStorage.getItem("peyton_day") || "1"));
-  const [earnedBadges, setEarnedBadges] = useState(() => JSON.parse(localStorage.getItem("peyton_badges") || '["seed"]'));
-  const [streak, setStreak] = useState(() => parseInt(localStorage.getItem("peyton_streak") || "0"));
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [sessionStarted, setSessionStarted] = useState(false);
-  const [showBadge, setShowBadge] = useState(null);
-  const messagesEndRef = useRef(null);
+  const [screen, setScreen]             = useState("welcome");
+  const [day, setDay]                   = useState(() => +localStorage.getItem("pd")||1);
+  const [badges, setBadges]             = useState(() => JSON.parse(localStorage.getItem("pb")||'["seed"]'));
+  const [streak, setStreak]             = useState(() => +localStorage.getItem("ps")||0);
+  const [skills, setSkills]             = useState(() => JSON.parse(localStorage.getItem("psk")||"[]"));
+  const [testimonials, setTestimonials] = useState(() => JSON.parse(localStorage.getItem("pt")||"[]"));
+  const [outside, setOutside]           = useState(() => JSON.parse(localStorage.getItem("po")||"{}"));
+  const [msgs, setMsgs]                 = useState([]);
+  const [input, setInput]               = useState("");
+  const [loading, setLoading]           = useState(false);
+  const [phase, setPhase]               = useState("chat");
+  const [reflection, setReflection]     = useState("");
+  const [affirmation, setAffirmation]   = useState("");
+  const [outText, setOutText]           = useState("");
+  const [outEval, setOutEval]           = useState("");
+  const [showBadge, setShowBadge]       = useState(null);
+  const [showTModal, setShowTModal]     = useState(false);
+  const [tInput, setTInput]             = useState("");
+  const [pendingBadge, setPendingBadge] = useState(null);
+  const [resumeTab, setResumeTab]       = useState("friends");
+  const endRef = useRef(null);
 
-  const curriculum = getCurriculum(currentDay);
+  const cur = getCurriculum(day);
+  const hasOut = !!OUTSIDE_PROJECTS[day];
+  const outDone = outside[day]?.submitted;
 
-  useEffect(() => {
-    localStorage.setItem("peyton_day", currentDay);
-    localStorage.setItem("peyton_badges", JSON.stringify(earnedBadges));
-    localStorage.setItem("peyton_streak", streak);
-  }, [currentDay, earnedBadges, streak]);
+  useEffect(()=>{
+    localStorage.setItem("pd",day); localStorage.setItem("pb",JSON.stringify(badges));
+    localStorage.setItem("ps",streak); localStorage.setItem("psk",JSON.stringify(skills));
+    localStorage.setItem("pt",JSON.stringify(testimonials)); localStorage.setItem("po",JSON.stringify(outside));
+  },[day,badges,streak,skills,testimonials,outside]);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  useEffect(()=>{ endRef.current?.scrollIntoView({behavior:"smooth"}); },[msgs]);
 
-  function completeDay() {
-    const nextDay = currentDay + 1;
-    const newStreak = streak + 1;
-    setStreak(newStreak);
-    setCurrentDay(nextDay);
-
-    // Check for new badges
-    const newBadges = [...earnedBadges];
-    ALL_BADGES.forEach(badge => {
-      if (!newBadges.includes(badge.id) && nextDay > badge.day) {
-        newBadges.push(badge.id);
-        setShowBadge(badge);
-        setTimeout(() => setShowBadge(null), 4000);
-      }
-    });
-    setEarnedBadges(newBadges);
-    setMessages([]);
-    setSessionStarted(false);
-    setScreen("dashboard");
+  async function cipher(sys, ms) {
+    try {
+      const r = await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({system:sys,messages:ms})});
+      const d = await r.json();
+      return d.content?.[0]?.text||"Keep going. What's your next move?";
+    } catch { return "Stay focused — connection blip. What were you working through?"; }
   }
 
   async function startSession() {
-    setScreen("session");
-    setSessionStarted(true);
-    setMessages([]);
-    setLoading(true);
-
-    const systemPrompt = `You are Cipher — Peyton Bowers' personal AI cybersecurity mentor and coach. Peyton is 17 years old, a Florida high school senior, and he's preparing to enter UCF as a cybersecurity freshman. He is in an intense 90-day pre-UCF accelerator program built by his father Lane Bowers.
-
-TODAY IS DAY ${currentDay} of 90. The session topic is: "${curriculum.title}"
-
-Peyton's mission today: ${curriculum.mission}
-
-His deliverable: ${curriculum.deliverable}
-
-Your role:
-- Open with genuine energy — you're his mentor, not a textbook
-- Reference his day number and streak (${streak} days)
-- Connect today's topic directly to his UCF future
-- Be technically accurate but explain things like a great professor, not a Wikipedia article
-- Push him to think, don't just give answers
-- End your opening with a specific first question or challenge to get him started
-
-Keep your opening message to 4-6 sentences. Make it feel like the start of a great training session.`;
-
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system: systemPrompt,
-          messages: [{ role: "user", content: `Start Day ${currentDay}: ${curriculum.title}` }]
-        })
-      });
-      const data = await res.json();
-      const text = data.content?.[0]?.text || "Ready to start your session, Peyton. Let's go.";
-      setMessages([{ role: "assistant", content: text }]);
-    } catch {
-      setMessages([{ role: "assistant", content: `Day ${currentDay} is live. Let's get into it — ${curriculum.title}. What do you already know about today's topic?` }]);
-    }
-    setLoading(false);
+    setScreen("session"); setPhase("chat"); setMsgs([]); setReflection(""); setAffirmation(""); setOutText(""); setOutEval(""); setLoading(true);
+    const sys = `You are Cipher — Peyton Bowers' personal AI cybersecurity mentor. Peyton is 17, heading to UCF for cybersecurity. He's on Day ${day} of a 90-day accelerator his father Lane built him. Streak: ${streak} days.
+TODAY: "${cur.title}" | MISSION: ${cur.mission} | DELIVERABLE: ${cur.deliverable}
+Open with energy. Reference his day and streak. Connect to UCF. End with a specific first challenge. 4-6 sentences max.`;
+    const t = await cipher(sys,[{role:"user",content:`Start Day ${day}`}]);
+    setMsgs([{role:"assistant",content:t}]); setLoading(false);
   }
 
-  async function sendMessage() {
-    if (!input.trim() || loading) return;
-    const userMsg = input.trim();
-    setInput("");
-    const newMessages = [...messages, { role: "user", content: userMsg }];
-    setMessages(newMessages);
-    setLoading(true);
-
-    const systemPrompt = `You are Cipher — Peyton Bowers' personal AI cybersecurity mentor. He's 17, heading to UCF for cybersecurity. Day ${currentDay} of 90. Topic: ${curriculum.title}. Mission: ${curriculum.mission}. Be direct, technical, encouraging. Push him. Max 4 sentences unless he asks for detail.`;
-
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system: systemPrompt,
-          messages: newMessages.map(m => ({ role: m.role, content: m.content }))
-        })
-      });
-      const data = await res.json();
-      const text = data.content?.[0]?.text || "Keep going. What's your next move?";
-      setMessages(prev => [...prev, { role: "assistant", content: text }]);
-    } catch {
-      setMessages(prev => [...prev, { role: "assistant", content: "Connection issue. Stay focused — what were you working through?" }]);
-    }
-    setLoading(false);
+  async function send() {
+    if(!input.trim()||loading) return;
+    const u = input.trim(); setInput("");
+    const nm = [...msgs,{role:"user",content:u}]; setMsgs(nm); setLoading(true);
+    const sys = `You are Cipher — Peyton's cybersecurity AI mentor. Day ${day}. Topic: ${cur.title}. Direct, technical, encouraging. Max 4 sentences unless detail is requested.`;
+    const t = await cipher(sys,nm);
+    setMsgs(p=>[...p,{role:"assistant",content:t}]); setLoading(false);
   }
 
-  // ---- SCREENS ----
-  if (screen === "welcome") return <WelcomeScreen onStart={() => setScreen("dashboard")} />;
-  if (screen === "badges") return <BadgesScreen badges={earnedBadges} onBack={() => setScreen("dashboard")} />;
-  if (screen === "session") return (
-    <SessionScreen
-      curriculum={curriculum}
-      messages={messages}
-      input={input}
-      setInput={setInput}
-      loading={loading}
-      onSend={sendMessage}
-      onComplete={completeDay}
-      onBack={() => setScreen("dashboard")}
-      messagesEndRef={messagesEndRef}
-      streak={streak}
-    />
+  async function startReflection() {
+    setPhase("reflection"); setLoading(true);
+    const sys = `You are Cipher — Peyton's mentor. He just finished Day ${day}: "${cur.title}". Ask ONE closing reflection question requiring him to explain the most important thing he learned TODAY in his own words. Specific to today's topic. 2 sentences max.`;
+    const t = await cipher(sys,[{role:"user",content:"Ask my closing reflection question."}]);
+    setMsgs(p=>[...p,{role:"assistant",content:t,isR:true}]); setLoading(false);
+  }
+
+  async function submitReflection() {
+    if(!reflection.trim()) return;
+    setLoading(true);
+    const ds = DAY_SKILLS[day]||[`Completed Day ${day} cybersecurity study`];
+    const sys = `You are Cipher — Peyton's mentor. He answered his Day ${day} closing reflection: "${cur.title}".
+His answer: "${reflection}"
+Proven skills for today: ${ds.join(", ")}
+Respond: (1) specifically validate what he got RIGHT — quote his exact words back, (2) add one key insight he can build on, (3) name each skill he has NOW PROVEN specifically, (4) end with a powerful 1-sentence confidence statement about UCF.
+6-8 sentences. Make him feel the weight of this.`;
+    const t = await cipher(sys,[{role:"user",content:reflection}]);
+    setAffirmation(t); setPhase("affirm");
+    const ns = [...skills]; ds.forEach(sk=>{ if(!ns.find(s=>s.skill===sk)) ns.push({day,skill:sk,date:new Date().toLocaleDateString()}); });
+    setSkills(ns); setLoading(false);
+  }
+
+  async function submitOutside() {
+    if(!outText.trim()) return;
+    setLoading(true);
+    const proj = OUTSIDE_PROJECTS[day];
+    const sys = `You are Cipher — Peyton's mentor. He completed a real-world outside project for Day ${day}. ${proj.cipherEval}\nHis submission: "${outText}"\n6-8 sentences. Be specific. Name exact skills proven. Make it feel like graduation.`;
+    const t = await cipher(sys,[{role:"user",content:outText}]);
+    setOutEval(t); setOutside(p=>({...p,[day]:{submitted:true,content:outText,eval:t}})); setLoading(false);
+  }
+
+  function completeDay() {
+    const nd = day+1; const ns = streak+1; setStreak(ns); setDay(nd);
+    const nb = [...badges]; let newB = null;
+    ALL_BADGES.forEach(b=>{ if(!nb.includes(b.id)&&nd>b.day){ nb.push(b.id); newB=b; } });
+    setBadges(nb);
+    if(newB){ setPendingBadge(newB); setShowBadge(newB); setTimeout(()=>{ setShowBadge(null); setShowTModal(true); },3000); }
+    setMsgs([]); setPhase("chat"); setReflection(""); setAffirmation(""); setOutText(""); setOutEval(""); setScreen("dashboard");
+  }
+
+  function saveTesimonial() {
+    if(tInput.trim()) setTestimonials(p=>[...p,{quote:tInput.trim(),day:day-1,badge:pendingBadge?.name||null,date:new Date().toLocaleDateString()}]);
+    setTInput(""); setShowTModal(false); setPendingBadge(null);
+  }
+
+  if(screen==="welcome") return <Welcome onStart={()=>setScreen("dashboard")} />;
+  if(screen==="badges")  return <Badges  badges={badges} testimonials={testimonials} onBack={()=>setScreen("dashboard")} />;
+  if(screen==="portfolio") return <Portfolio skills={skills} outside={outside} day={day} onBack={()=>setScreen("dashboard")} />;
+  if(screen==="resume")  return <Resume  skills={skills} badges={badges} outside={outside} day={day} streak={streak} tab={resumeTab} setTab={setResumeTab} onBack={()=>setScreen("dashboard")} />;
+
+  if(screen==="session") return (
+    <Session cur={cur} msgs={msgs} input={input} setInput={setInput} loading={loading} phase={phase}
+      reflection={reflection} setReflection={setReflection} affirmation={affirmation}
+      hasOut={hasOut} outDone={outDone} outText={outText} setOutText={setOutText} outEval={outEval}
+      outsideProj={OUTSIDE_PROJECTS[day]} outside={outside}
+      onSend={send} onStartReflect={startReflection} onSubmitReflect={submitReflection}
+      onSubmitOut={submitOutside} onComplete={completeDay} onBack={()=>setScreen("dashboard")}
+      endRef={endRef} streak={streak} />
   );
 
-  // Dashboard
-  const progress = Math.round((currentDay / 90) * 100);
-  const phase30 = currentDay >= 30;
-  const phase60 = currentDay >= 60;
-  const phase90 = currentDay >= 90;
-
+  const prog = Math.round((day/90)*100);
   return (
-    <div style={{ minHeight: "100vh", background: styles.bg, padding: "0 0 80px 0" }}>
+    <div style={{minHeight:"100vh",background:C.bg,paddingBottom:80}}>
       <style>{css}</style>
       {showBadge && <BadgeToast badge={showBadge} />}
+      {showTModal && <TModal badge={pendingBadge} val={tInput} onChange={setTInput} onSave={saveTesimonial} onSkip={()=>setShowTModal(false)} />}
 
       {/* HEADER */}
-      <div style={{ background: styles.card, borderBottom: `1px solid ${styles.border}`, padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, zIndex: 100 }}>
+      <div style={{background:C.card,borderBottom:`1px solid ${C.border}`,padding:"12px 18px",display:"flex",justifyContent:"space-between",alignItems:"center",position:"sticky",top:0,zIndex:100}}>
         <div>
-          <div style={{ fontSize: 11, color: styles.accent, letterSpacing: 2, textTransform: "uppercase", fontWeight: 600 }}>WinterHaven.AI</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: styles.text }}>Peyton's Accelerator</div>
+          <div style={{fontSize:9,color:C.accent,letterSpacing:2,textTransform:"uppercase",fontWeight:600}}>WinterHaven.AI</div>
+          <div style={{fontSize:16,fontWeight:700}}>Peyton's Accelerator</div>
         </div>
-        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 20, fontWeight: 900, color: styles.gold }}>{streak}</div>
-            <div style={{ fontSize: 10, color: styles.muted }}>streak</div>
+        <div style={{display:"flex",gap:6,alignItems:"center"}}>
+          <div style={{textAlign:"center",marginRight:4}}>
+            <div style={{fontSize:18,fontWeight:900,color:C.gold}}>{streak}</div>
+            <div style={{fontSize:9,color:C.muted}}>streak</div>
           </div>
-          <button onClick={() => setScreen("badges")} style={{ background: styles.border, color: styles.text, padding: "8px 16px", borderRadius: 8, fontSize: 13, fontWeight: 600 }}>
-            🏆 {earnedBadges.length}
-          </button>
+          <button onClick={()=>setScreen("portfolio")} style={{background:C.border,color:C.text,padding:"6px 8px",borderRadius:7,fontSize:12}} title="Portfolio">📋</button>
+          <button onClick={()=>setScreen("resume")}    style={{background:C.border,color:C.text,padding:"6px 8px",borderRadius:7,fontSize:12}} title="Resume">📄</button>
+          <button onClick={()=>setScreen("badges")}    style={{background:C.border,color:C.text,padding:"6px 10px",borderRadius:7,fontSize:12,fontWeight:600}}>🏆 {badges.length}</button>
         </div>
       </div>
 
-      <div style={{ maxWidth: 480, margin: "0 auto", padding: "0 16px" }}>
-
-        {/* DAY COUNTER */}
-        <div style={{ marginTop: 24, marginBottom: 20 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 8 }}>
+      <div style={{maxWidth:480,margin:"0 auto",padding:"0 16px"}}>
+        {/* DAY + PROGRESS */}
+        <div style={{marginTop:18,marginBottom:14}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:6}}>
             <div>
-              <div style={{ fontSize: 13, color: styles.muted }}>Day</div>
-              <div style={{ fontSize: 48, fontWeight: 900, color: styles.accent, lineHeight: 1 }}>{currentDay}</div>
-              <div style={{ fontSize: 13, color: styles.muted }}>of 90</div>
+              <div style={{fontSize:11,color:C.muted}}>Day</div>
+              <div style={{fontSize:46,fontWeight:900,color:C.accent,lineHeight:1}}>{day}</div>
+              <div style={{fontSize:11,color:C.muted}}>of 90</div>
             </div>
-            <div style={{ textAlign: "right" }}>
-              <div style={{ fontSize: 13, color: styles.muted }}>Phase</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: styles.text }}>{curriculum.phase}</div>
-              <div style={{ fontSize: 13, color: styles.muted }}>Week {curriculum.week}</div>
+            <div style={{textAlign:"right"}}>
+              <div style={{fontSize:11,color:C.muted}}>Phase</div>
+              <div style={{fontSize:16,fontWeight:700}}>{cur.phase}</div>
+              <div style={{fontSize:11,color:C.muted}}>Week {cur.week}</div>
             </div>
           </div>
-
-          {/* Progress bar */}
-          <div style={{ background: styles.border, borderRadius: 99, height: 8, overflow: "hidden" }}>
-            <div style={{ height: "100%", width: `${progress}%`, background: `linear-gradient(90deg, ${styles.accent}, ${styles.plum})`, borderRadius: 99, transition: "width 0.5s ease" }} />
+          <div style={{background:C.border,borderRadius:99,height:7,overflow:"hidden"}}>
+            <div style={{height:"100%",width:`${prog}%`,background:`linear-gradient(90deg,${C.accent},${C.plum})`,borderRadius:99,transition:"width 0.5s"}} />
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
-            <span style={{ fontSize: 11, color: styles.muted }}>Start</span>
-            <span style={{ fontSize: 11, color: styles.accent, fontWeight: 600 }}>{progress}% complete</span>
-            <span style={{ fontSize: 11, color: styles.muted }}>UCF Day 1</span>
+          <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}>
+            <span style={{fontSize:10,color:C.muted}}>Start</span>
+            <span style={{fontSize:10,color:C.accent,fontWeight:600}}>{prog}% to UCF</span>
+            <span style={{fontSize:10,color:C.muted}}>Day 1 at UCF</span>
           </div>
         </div>
 
-        {/* PHASE MILESTONES */}
-        <div style={{ display: "flex", gap: 8, marginBottom: 24 }}>
-          {[
-            { label: "Foundation", days: "1-30", done: phase30 },
-            { label: "Builder", days: "31-60", done: phase60 },
-            { label: "UCF Ready", days: "61-90", done: phase90 },
-          ].map(p => (
-            <div key={p.label} style={{ flex: 1, background: p.done ? "rgba(0,255,136,0.1)" : styles.card, border: `1px solid ${p.done ? styles.green : styles.border}`, borderRadius: 10, padding: "10px 8px", textAlign: "center" }}>
-              <div style={{ fontSize: 16 }}>{p.done ? "✅" : "🔒"}</div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: p.done ? styles.green : styles.muted, marginTop: 4 }}>{p.label}</div>
-              <div style={{ fontSize: 10, color: styles.muted }}>Days {p.days}</div>
+        {/* SKILLS SNAPSHOT */}
+        {skills.length>0&&(
+          <div style={{background:"rgba(0,255,136,0.05)",border:`1px solid rgba(0,255,136,0.2)`,borderRadius:10,padding:"10px 14px",marginBottom:12,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div>
+              <div style={{fontSize:10,color:C.green,fontWeight:600}}>📋 {skills.length} SKILLS CONFIRMED</div>
+              <div style={{fontSize:11,color:C.muted,marginTop:2}}>{skills[skills.length-1]?.skill?.substring(0,50)}...</div>
             </div>
-          ))}
-        </div>
+            <button onClick={()=>setScreen("portfolio")} style={{background:"transparent",color:C.green,fontSize:11,fontWeight:600,padding:0}}>View all →</button>
+          </div>
+        )}
 
         {/* DAILY QUOTE */}
-        <div style={{ background: `linear-gradient(135deg, rgba(139,92,246,0.15), rgba(0,212,255,0.05))`, border: `1px solid rgba(139,92,246,0.3)`, borderRadius: 12, padding: "16px 18px", marginBottom: 20 }}>
-          <div style={{ fontSize: 11, color: styles.plum, letterSpacing: 2, textTransform: "uppercase", fontWeight: 600, marginBottom: 8 }}>Today's Fuel</div>
-          <div style={{ fontSize: 15, color: styles.text, lineHeight: 1.6, fontStyle: "italic" }}>"{curriculum.quote.text}"</div>
-          <div style={{ fontSize: 12, color: styles.muted, marginTop: 8, fontWeight: 600 }}>— {curriculum.quote.author}</div>
+        <div style={{background:"rgba(139,92,246,0.08)",border:`1px solid rgba(139,92,246,0.25)`,borderRadius:12,padding:"12px 14px",marginBottom:14}}>
+          <div style={{fontSize:9,color:C.plum,letterSpacing:2,textTransform:"uppercase",fontWeight:600,marginBottom:5}}>Today's Fuel</div>
+          <div style={{fontSize:13,color:C.text,lineHeight:1.6,fontStyle:"italic"}}>"{cur.quote.text}"</div>
+          <div style={{fontSize:10,color:C.muted,marginTop:5,fontWeight:600}}>— {cur.quote.author}</div>
         </div>
 
-        {/* TODAY'S MISSION CARD */}
-        <div style={{ background: styles.card, border: `1px solid ${styles.border}`, borderRadius: 16, padding: "20px", marginBottom: 20 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <div style={{ fontSize: 11, color: styles.accent, letterSpacing: 2, textTransform: "uppercase", fontWeight: 600 }}>Day {currentDay} Mission</div>
-            <div style={{ fontSize: 11, color: styles.muted, background: styles.border, padding: "4px 10px", borderRadius: 99 }}>⏱ {curriculum.duration} min</div>
+        {/* MISSION CARD */}
+        <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:14,padding:16,marginBottom:14}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+            <div style={{fontSize:9,color:C.accent,letterSpacing:2,textTransform:"uppercase",fontWeight:600}}>Day {day} Mission</div>
+            <div style={{fontSize:10,color:C.muted,background:C.border,padding:"2px 8px",borderRadius:99}}>⏱ {cur.duration} min</div>
           </div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: styles.text, marginBottom: 12, lineHeight: 1.3 }}>{curriculum.title}</div>
-          <div style={{ fontSize: 14, color: styles.muted, lineHeight: 1.7, marginBottom: 16 }}>{curriculum.mission}</div>
+          <div style={{fontSize:16,fontWeight:700,marginBottom:8,lineHeight:1.3}}>{cur.title}</div>
+          <div style={{fontSize:13,color:C.muted,lineHeight:1.7,marginBottom:10}}>{cur.mission}</div>
 
-          {/* Deliverable */}
-          <div style={{ background: "rgba(0,255,136,0.05)", border: `1px solid rgba(0,255,136,0.2)`, borderRadius: 8, padding: "10px 14px", marginBottom: 16 }}>
-            <div style={{ fontSize: 11, color: styles.green, fontWeight: 600, marginBottom: 4 }}>📦 DELIVERABLE</div>
-            <div style={{ fontSize: 13, color: styles.text }}>{curriculum.deliverable}</div>
-          </div>
-
-          {/* Tools */}
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
-            {curriculum.tools.map(t => (
-              <span key={t} style={{ fontSize: 11, color: styles.accent, background: "rgba(0,212,255,0.1)", border: `1px solid rgba(0,212,255,0.2)`, padding: "4px 10px", borderRadius: 99, fontWeight: 500 }}>{t}</span>
-            ))}
+          <div style={{background:"rgba(0,255,136,0.05)",border:`1px solid rgba(0,255,136,0.2)`,borderRadius:7,padding:"7px 10px",marginBottom:8}}>
+            <div style={{fontSize:9,color:C.green,fontWeight:600,marginBottom:2}}>📦 DELIVERABLE</div>
+            <div style={{fontSize:12,color:C.text}}>{cur.deliverable}</div>
           </div>
 
-          {/* Badge Preview */}
-          {curriculum.badge && (
-            <div style={{ background: "rgba(255,179,0,0.05)", border: `1px solid rgba(255,179,0,0.3)`, borderRadius: 8, padding: "10px 14px", marginBottom: 16 }}>
-              <div style={{ fontSize: 11, color: styles.gold, fontWeight: 600, marginBottom: 4 }}>🏆 BADGE UNLOCKS TODAY</div>
-              <div style={{ fontSize: 13, color: styles.text }}>{curriculum.badge}</div>
+          {hasOut&&(
+            <div style={{background:"rgba(255,179,0,0.05)",border:`1px solid rgba(255,179,0,0.25)`,borderRadius:7,padding:"7px 10px",marginBottom:8}}>
+              <div style={{fontSize:9,color:C.gold,fontWeight:600,marginBottom:2}}>🌍 OUTSIDE PROJECT {outDone?"✅":"— leave the app"}</div>
+              <div style={{fontSize:12,color:C.text}}>{outDone?"Submitted and confirmed by Cipher":"Real-world mission — complete and bring back proof"}</div>
             </div>
           )}
 
-          <button
-            onClick={startSession}
-            className="glow"
-            style={{ width: "100%", background: `linear-gradient(135deg, ${styles.accent}, ${styles.plum})`, color: "#000", padding: "16px", borderRadius: 12, fontSize: 16, fontWeight: 800, letterSpacing: 0.5 }}
-          >
-            ⚡ START DAY {currentDay} →
+          {cur.badge&&(
+            <div style={{background:"rgba(255,179,0,0.05)",border:`1px solid rgba(255,179,0,0.25)`,borderRadius:7,padding:"7px 10px",marginBottom:10}}>
+              <div style={{fontSize:9,color:C.gold,fontWeight:600,marginBottom:2}}>🏆 BADGE UNLOCKS TODAY</div>
+              <div style={{fontSize:12,color:C.text}}>{cur.badge}</div>
+            </div>
+          )}
+
+          <button onClick={startSession} className="gl" style={{width:"100%",background:`linear-gradient(135deg,${C.accent},${C.plum})`,color:"#000",padding:"13px",borderRadius:11,fontSize:14,fontWeight:800}}>
+            ⚡ START DAY {day} →
           </button>
         </div>
 
         {/* NEXT BADGE */}
-        <div style={{ background: styles.card, border: `1px solid ${styles.border}`, borderRadius: 12, padding: "16px 18px", marginBottom: 20 }}>
-          <div style={{ fontSize: 11, color: styles.gold, letterSpacing: 2, textTransform: "uppercase", fontWeight: 600, marginBottom: 12 }}>Next Badge</div>
-          {(() => {
-            const next = ALL_BADGES.find(b => !earnedBadges.includes(b.id));
-            if (!next) return <div style={{ color: styles.muted, fontSize: 13 }}>All badges earned! 🎓</div>;
-            const daysLeft = next.day - currentDay + 1;
-            return (
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <div style={{ fontSize: 32 }}>{next.icon}</div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: styles.text }}>{next.name}</div>
-                  <div style={{ fontSize: 12, color: styles.muted }}>{next.desc}</div>
-                  <div style={{ fontSize: 12, color: styles.gold, marginTop: 4 }}>{daysLeft > 0 ? `${daysLeft} days away` : "Complete today!"}</div>
+        {(()=>{ const n=ALL_BADGES.find(b=>!badges.includes(b.id)); if(!n) return null;
+          return (
+            <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:"12px 14px",marginBottom:14}}>
+              <div style={{fontSize:9,color:C.gold,letterSpacing:2,textTransform:"uppercase",fontWeight:600,marginBottom:8}}>Next Badge</div>
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <div style={{fontSize:28}}>{n.icon}</div>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:13,fontWeight:700}}>{n.name}</div>
+                  <div style={{fontSize:11,color:C.muted}}>{n.desc}</div>
+                  <div style={{fontSize:11,color:C.gold,marginTop:2}}>{n.day-day+1>0?`${n.day-day+1} days away`:"Complete today!"}</div>
                 </div>
               </div>
-            );
-          })()}
+            </div>
+          );
+        })()}
+
+        {/* SHARE */}
+        <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:"12px 14px",marginBottom:14}}>
+          <div style={{fontSize:9,color:C.accent,letterSpacing:2,textTransform:"uppercase",fontWeight:600,marginBottom:6}}>Share Your Progress</div>
+          <div style={{display:"flex",gap:8}}>
+            <button onClick={()=>{ navigator.clipboard?.writeText("https://peyton-accelerator.vercel.app"); alert("Link copied! Send it to a friend."); }} style={{flex:1,background:C.border,color:C.text,padding:"9px",borderRadius:8,fontSize:12,fontWeight:600}}>📤 Share App Link</button>
+            {skills.length>=3&&<button onClick={()=>setScreen("resume")} style={{flex:1,background:"transparent",border:`1px solid ${C.accent}`,color:C.accent,padding:"9px",borderRadius:8,fontSize:12,fontWeight:600}}>📄 Show Resume</button>}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-// ============================================================
-// WELCOME SCREEN
-// ============================================================
-function WelcomeScreen({ onStart }) {
+// ---- SESSION ----
+function Session({cur,msgs,input,setInput,loading,phase,reflection,setReflection,affirmation,hasOut,outDone,outText,setOutText,outEval,outsideProj,outside,onSend,onStartReflect,onSubmitReflect,onSubmitOut,onComplete,onBack,endRef,streak}) {
+  const canReflect = msgs.filter(m=>m.role==="user").length>=2;
   return (
-    <div style={{ minHeight: "100vh", background: styles.bg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24 }}>
+    <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column"}}>
       <style>{css}</style>
-      <div style={{ maxWidth: 400, width: "100%", textAlign: "center" }}>
-        <div style={{ fontSize: 13, color: styles.accent, letterSpacing: 3, textTransform: "uppercase", marginBottom: 8 }}>A Gift From Lane</div>
-        <div style={{ fontSize: 42, fontWeight: 900, color: styles.text, lineHeight: 1.1, marginBottom: 8 }}>Peyton's<br /><span style={{ color: styles.accent }}>Accelerator</span></div>
-        <div style={{ fontSize: 16, color: styles.muted, marginBottom: 8 }}>90 Days. 1 Hour Per Day.</div>
-        <div style={{ fontSize: 14, color: styles.muted, marginBottom: 40, fontStyle: "italic" }}>UCF Cybersecurity — Freshman Year</div>
-
-        <div style={{ background: styles.card, border: `1px solid ${styles.border}`, borderRadius: 16, padding: 24, marginBottom: 32, textAlign: "left" }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: styles.gold, marginBottom: 12 }}>🎯 Your Mission</div>
-          <div style={{ fontSize: 14, color: styles.text, lineHeight: 1.7 }}>
-            90 days from now you walk into UCF not as a student trying to figure it out — but as a cybersecurity professional in training who has already built real things, solved real problems, and committed to mastery.
-          </div>
+      <div style={{background:C.card,borderBottom:`1px solid ${C.border}`,padding:"10px 16px"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}>
+          <button onClick={onBack} style={{background:"transparent",color:C.muted,fontSize:12,padding:"3px 0"}}>← Back</button>
+          <div style={{fontSize:9,color:C.accent,letterSpacing:2,textTransform:"uppercase",fontWeight:600}}>Day {cur.day} · Cipher AI</div>
+          <div style={{fontSize:11,color:C.gold}}>🔥 {streak}</div>
         </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 32 }}>
-          {[["⚡", "5-Day SPARK Onramp"], ["🔍", "Real Security Research"], ["💻", "Code You Write"], ["🎓", "UCF Ready Day 1"]].map(([icon, text]) => (
-            <div key={text} style={{ background: styles.card, border: `1px solid ${styles.border}`, borderRadius: 10, padding: "12px 14px", display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 20 }}>{icon}</span>
-              <span style={{ fontSize: 12, color: styles.text, fontWeight: 500 }}>{text}</span>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ fontSize: 13, color: styles.muted, fontStyle: "italic", marginBottom: 32 }}>
-          "I fear not the man who has practiced 10,000 kicks once, but I fear the man who has practiced one kick 10,000 times." — Bruce Lee
-        </div>
-
-        <button
-          onClick={onStart}
-          className="glow"
-          style={{ width: "100%", background: `linear-gradient(135deg, ${styles.accent}, ${styles.plum})`, color: "#000", padding: "18px", borderRadius: 14, fontSize: 18, fontWeight: 900 }}
-        >
-          I'M READY — LET'S GO →
-        </button>
-        <div style={{ fontSize: 12, color: styles.muted, marginTop: 12 }}>Take your time. There is no rush. Your work matters.</div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================
-// SESSION SCREEN
-// ============================================================
-function SessionScreen({ curriculum, messages, input, setInput, loading, onSend, onComplete, onBack, messagesEndRef, streak }) {
-  return (
-    <div style={{ minHeight: "100vh", background: styles.bg, display: "flex", flexDirection: "column" }}>
-      <style>{css}</style>
-
-      {/* Session Header */}
-      <div style={{ background: styles.card, borderBottom: `1px solid ${styles.border}`, padding: "12px 16px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-          <button onClick={onBack} style={{ background: "transparent", color: styles.muted, fontSize: 13, padding: "4px 8px" }}>← Back</button>
-          <div style={{ fontSize: 11, color: styles.accent, letterSpacing: 2, textTransform: "uppercase", fontWeight: 600 }}>Day {curriculum.day} • Cipher AI</div>
-          <div style={{ fontSize: 11, color: styles.gold }}>🔥 {streak}</div>
-        </div>
-        <div style={{ fontSize: 14, fontWeight: 700, color: styles.text }}>{curriculum.title}</div>
-        <div style={{ fontSize: 12, color: styles.muted, marginTop: 2 }}>📦 {curriculum.deliverable}</div>
+        <div style={{fontSize:13,fontWeight:700}}>{cur.title}</div>
       </div>
 
-      {/* Messages */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "16px", display: "flex", flexDirection: "column", gap: 16 }}>
-        {messages.length === 0 && (
-          <div style={{ textAlign: "center", padding: "40px 20px", color: styles.muted }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>⚡</div>
-            <div style={{ fontSize: 16, fontWeight: 600, color: styles.text }}>Cipher is loading your session...</div>
-          </div>
-        )}
-        {messages.map((msg, i) => (
-          <div key={i} className="slide-in" style={{ display: "flex", flexDirection: "column", alignItems: msg.role === "user" ? "flex-end" : "flex-start" }}>
-            <div style={{ fontSize: 10, color: styles.muted, marginBottom: 4, padding: "0 4px" }}>{msg.role === "user" ? "Peyton" : "Cipher"}</div>
-            <div style={{
-              maxWidth: "88%", padding: "12px 16px", borderRadius: msg.role === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
-              background: msg.role === "user" ? `linear-gradient(135deg, ${styles.accent}, ${styles.plum})` : styles.card,
-              border: msg.role === "user" ? "none" : `1px solid ${styles.border}`,
-              color: msg.role === "user" ? "#000" : styles.text,
-              fontSize: 14, lineHeight: 1.7, fontWeight: msg.role === "user" ? 500 : 400,
-            }}>
-              {msg.content}
-            </div>
+      <div style={{flex:1,overflowY:"auto",padding:"14px",display:"flex",flexDirection:"column",gap:12}}>
+        {msgs.length===0&&<div style={{textAlign:"center",padding:"40px 20px",color:C.muted}}><div style={{fontSize:36,marginBottom:10}}>⚡</div><div style={{fontSize:14,fontWeight:600,color:C.text}}>Loading Cipher...</div></div>}
+        {msgs.map((m,i)=>(
+          <div key={i} className="si" style={{display:"flex",flexDirection:"column",alignItems:m.role==="user"?"flex-end":"flex-start"}}>
+            <div style={{fontSize:9,color:C.muted,marginBottom:3,padding:"0 4px"}}>{m.role==="user"?"Peyton":"Cipher"}</div>
+            <div style={{maxWidth:"88%",padding:"10px 13px",borderRadius:m.role==="user"?"14px 14px 4px 14px":"14px 14px 14px 4px",background:m.isR?"rgba(255,179,0,0.08)":m.role==="user"?`linear-gradient(135deg,${C.accent},${C.plum})`:C.card,border:m.role!=="user"?`1px solid ${m.isR?"rgba(255,179,0,0.3)":C.border}`:"none",color:m.role==="user"?"#000":C.text,fontSize:13,lineHeight:1.7}}>{m.content}</div>
           </div>
         ))}
-        {loading && (
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-            <div style={{ background: styles.card, border: `1px solid ${styles.border}`, borderRadius: "16px 16px 16px 4px", padding: "12px 16px" }}>
-              <div style={{ display: "flex", gap: 4 }}>
-                {[0, 1, 2].map(i => (
-                  <div key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: styles.accent, animation: `pulse ${0.6 + i * 0.2}s infinite` }} />
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
+        {loading&&<div style={{display:"flex",gap:4,padding:"10px 13px",background:C.card,border:`1px solid ${C.border}`,borderRadius:"14px 14px 14px 4px",width:"fit-content"}}>
+          {[0,1,2].map(i=><div key={i} className="pu" style={{width:6,height:6,borderRadius:"50%",background:C.accent,animationDelay:`${i*0.2}s`}} />)}
+        </div>}
+        <div ref={endRef} />
       </div>
 
-      {/* Input */}
-      <div style={{ background: styles.card, borderTop: `1px solid ${styles.border}`, padding: 16 }}>
-        <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-          <input
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && !e.shiftKey && onSend()}
-            placeholder="Ask Cipher anything..."
-            style={{ flex: 1, background: styles.bg, border: `1px solid ${styles.border}`, borderRadius: 12, padding: "12px 16px", color: styles.text, fontSize: 14 }}
-          />
-          <button
-            onClick={onSend}
-            disabled={loading || !input.trim()}
-            style={{ background: input.trim() ? `linear-gradient(135deg, ${styles.accent}, ${styles.plum})` : styles.border, color: "#000", padding: "12px 20px", borderRadius: 12, fontWeight: 700, fontSize: 14, opacity: loading ? 0.5 : 1 }}
-          >
-            →
-          </button>
-        </div>
-        <button
-          onClick={onComplete}
-          style={{ width: "100%", background: "rgba(0,255,136,0.1)", border: `1px solid ${styles.green}`, color: styles.green, padding: "12px", borderRadius: 10, fontSize: 13, fontWeight: 600 }}
-        >
-          ✅ Mark Day {curriculum.day} Complete → Unlock Day {curriculum.day + 1}
-        </button>
+      <div style={{background:C.card,borderTop:`1px solid ${C.border}`,padding:13}}>
+        {phase==="chat"&&<>
+          <div style={{display:"flex",gap:7,marginBottom:8}}>
+            <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&!e.shiftKey&&onSend()} placeholder="Ask Cipher anything..." style={{flex:1,background:C.bg,border:`1px solid ${C.border}`,borderRadius:10,padding:"9px 12px",color:C.text,fontSize:13}} />
+            <button onClick={onSend} disabled={loading||!input.trim()} style={{background:input.trim()?`linear-gradient(135deg,${C.accent},${C.plum})`:C.border,color:"#000",padding:"9px 16px",borderRadius:10,fontWeight:700,opacity:loading?0.5:1}}>→</button>
+          </div>
+          {canReflect&&<button onClick={onStartReflect} style={{width:"100%",background:"rgba(255,179,0,0.08)",border:`1px solid rgba(255,179,0,0.3)`,color:C.gold,padding:"9px",borderRadius:8,fontSize:12,fontWeight:600}}>✍️ I'm done — close out Day {cur.day}</button>}
+        </>}
+
+        {phase==="reflection"&&<>
+          <div style={{fontSize:10,color:C.gold,fontWeight:600,marginBottom:6}}>✍️ PROVE YOU GOT IT — explain it in your own words</div>
+          <textarea value={reflection} onChange={e=>setReflection(e.target.value)} placeholder="In your own words..." style={{width:"100%",background:C.bg,border:`1px solid ${C.border}`,borderRadius:9,padding:"9px 12px",color:C.text,fontSize:13,lineHeight:1.6,resize:"none",height:85,marginBottom:8}} />
+          <button onClick={onSubmitReflect} disabled={!reflection.trim()||loading} style={{width:"100%",background:reflection.trim()?`linear-gradient(135deg,${C.gold},#FF8C00)`:C.border,color:"#000",padding:"11px",borderRadius:9,fontSize:13,fontWeight:700,opacity:loading?0.5:1}}>Submit → Get Cipher's Verdict</button>
+        </>}
+
+        {phase==="affirm"&&<>
+          <div style={{background:"rgba(0,255,136,0.05)",border:`1px solid rgba(0,255,136,0.25)`,borderRadius:9,padding:"11px 13px",marginBottom:9}}>
+            <div style={{fontSize:9,color:C.green,fontWeight:600,marginBottom:5}}>✅ CIPHER'S VERDICT — SKILLS CONFIRMED</div>
+            <div style={{fontSize:12,color:C.text,lineHeight:1.7}}>{affirmation}</div>
+          </div>
+          {!hasOut||outDone?
+            <button onClick={onComplete} className="gl" style={{width:"100%",background:`linear-gradient(135deg,${C.green},#00AA66)`,color:"#000",padding:"12px",borderRadius:9,fontSize:14,fontWeight:800}}>
+              ✅ Day {cur.day} Complete — Unlock Day {cur.day+1} 🔓
+            </button>:
+            <div style={{fontSize:12,color:C.gold,textAlign:"center",padding:"8px 0"}}>Complete the Outside Project below to finish Day {cur.day}</div>
+          }
+        </>}
+
+        {(phase==="chat"||phase==="affirm")&&hasOut&&(
+          <div style={{marginTop:10,background:"rgba(255,179,0,0.05)",border:`1px solid rgba(255,179,0,0.25)`,borderRadius:11,padding:"11px 13px"}}>
+            <div style={{fontSize:10,color:C.gold,fontWeight:600,marginBottom:5}}>🌍 OUTSIDE PROJECT {outDone?"✅ SUBMITTED":""}</div>
+            {!outDone?<>
+              <div style={{fontSize:12,color:C.text,lineHeight:1.6,marginBottom:8}}>{outsideProj?.mission}</div>
+              <textarea value={outText} onChange={e=>setOutText(e.target.value)} placeholder={outsideProj?.placeholder} style={{width:"100%",background:C.bg,border:`1px solid ${C.border}`,borderRadius:7,padding:"7px 11px",color:C.text,fontSize:12,lineHeight:1.6,resize:"none",height:75,marginBottom:7}} />
+              <button onClick={onSubmitOut} disabled={!outText.trim()||loading} style={{width:"100%",background:outText.trim()?`linear-gradient(135deg,${C.gold},#FF8C00)`:C.border,color:"#000",padding:"9px",borderRadius:7,fontSize:12,fontWeight:700}}>Submit to Cipher</button>
+            </>:<>
+              <div style={{fontSize:11,color:C.muted,fontStyle:"italic",marginBottom:6}}>"{outside[cur.day]?.content?.substring(0,80)}..."</div>
+              {outEval&&<div style={{fontSize:12,color:C.text,lineHeight:1.6}}>{outEval.substring(0,200)}...</div>}
+              {phase==="affirm"&&<button onClick={onComplete} className="gl" style={{width:"100%",background:`linear-gradient(135deg,${C.green},#00AA66)`,color:"#000",padding:"11px",borderRadius:8,fontSize:13,fontWeight:800,marginTop:9}}>✅ Day {cur.day} Complete → Unlock Day {cur.day+1} 🔓</button>}
+            </>}
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-// ============================================================
-// BADGES SCREEN
-// ============================================================
-function BadgesScreen({ badges, onBack }) {
+// ---- PORTFOLIO ----
+function Portfolio({skills,outside,day,onBack}) {
+  const grouped={};
+  skills.forEach(s=>{ if(!grouped[s.day]) grouped[s.day]=[]; grouped[s.day].push(s); });
   return (
-    <div style={{ minHeight: "100vh", background: styles.bg, padding: 20 }}>
+    <div style={{minHeight:"100vh",background:C.bg,padding:20}}>
       <style>{css}</style>
-      <button onClick={onBack} style={{ background: "transparent", color: styles.muted, fontSize: 14, marginBottom: 20, padding: "4px 0" }}>← Back</button>
-      <div style={{ fontSize: 11, color: styles.gold, letterSpacing: 3, textTransform: "uppercase", fontWeight: 600, marginBottom: 8 }}>Badge Collection</div>
-      <div style={{ fontSize: 24, fontWeight: 900, color: styles.text, marginBottom: 24 }}>Your Achievements</div>
+      <button onClick={onBack} style={{background:"transparent",color:C.muted,fontSize:13,marginBottom:14,padding:"3px 0"}}>← Back</button>
+      <div style={{fontSize:9,color:C.green,letterSpacing:3,textTransform:"uppercase",fontWeight:600,marginBottom:3}}>Skills Portfolio</div>
+      <div style={{fontSize:20,fontWeight:900,marginBottom:3}}>What Peyton Can Do</div>
+      <div style={{fontSize:12,color:C.muted,marginBottom:18}}>{skills.length} skills confirmed · {Object.keys(grouped).length} days</div>
+      {skills.length===0&&<div style={{textAlign:"center",padding:"40px 20px",color:C.muted}}><div style={{fontSize:28,marginBottom:10}}>📋</div>Complete Day 1 to start building your portfolio.</div>}
+      {Object.keys(grouped).sort((a,b)=>+a-+b).map(d=>(
+        <div key={d} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:11,padding:"12px 14px",marginBottom:10}}>
+          <div style={{fontSize:10,color:C.accent,fontWeight:600,marginBottom:6}}>Day {d} — {grouped[d][0]?.date}</div>
+          {grouped[d].map((s,i)=>(
+            <div key={i} style={{display:"flex",gap:7,marginBottom:4}}>
+              <span style={{color:C.green,fontSize:12}}>✓</span>
+              <span style={{fontSize:12,color:C.text,lineHeight:1.5}}>{s.skill}</span>
+            </div>
+          ))}
+          {outside[d]?.submitted&&(
+            <div style={{marginTop:7,background:"rgba(255,179,0,0.05)",border:`1px solid rgba(255,179,0,0.2)`,borderRadius:6,padding:"5px 9px"}}>
+              <div style={{fontSize:9,color:C.gold,fontWeight:600}}>🌍 REAL WORLD PROOF SUBMITTED</div>
+              <div style={{fontSize:11,color:C.muted,marginTop:2}}>{outside[d].content?.substring(0,70)}...</div>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        {ALL_BADGES.map(badge => {
-          const earned = badges.includes(badge.id);
-          return (
-            <div key={badge.id} style={{ background: earned ? `rgba(255,179,0,0.05)` : styles.card, border: `1px solid ${earned ? "rgba(255,179,0,0.4)" : styles.border}`, borderRadius: 14, padding: "16px 18px", display: "flex", alignItems: "center", gap: 16, opacity: earned ? 1 : 0.4 }}>
-              <div style={{ fontSize: 36 }}>{badge.icon}</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 16, fontWeight: 700, color: earned ? styles.gold : styles.muted }}>{badge.name}</div>
-                <div style={{ fontSize: 13, color: styles.muted, marginTop: 2 }}>{badge.desc}</div>
-                <div style={{ fontSize: 11, color: styles.muted, marginTop: 4 }}>Unlocks: Day {badge.day}</div>
+// ---- RESUME ----
+function Resume({skills,badges,outside,day,streak,tab,setTab,onBack}) {
+  const outsideDone = Object.keys(outside).filter(d=>outside[d].submitted);
+  const earnedBadges = ALL_BADGES.filter(b=>badges.includes(b.id));
+  return (
+    <div style={{minHeight:"100vh",background:C.bg,padding:20}}>
+      <style>{css}</style>
+      <button onClick={onBack} style={{background:"transparent",color:C.muted,fontSize:13,marginBottom:14,padding:"3px 0"}}>← Back</button>
+      <div style={{fontSize:9,color:C.accent,letterSpacing:3,textTransform:"uppercase",fontWeight:600,marginBottom:3}}>Living Resume</div>
+      <div style={{fontSize:20,fontWeight:900,marginBottom:2}}>Peyton Bowers</div>
+      <div style={{fontSize:12,color:C.muted,marginBottom:14}}>Cybersecurity Professional in Training · Day {day} of 90 · {streak} day streak</div>
+
+      <div style={{display:"flex",gap:7,marginBottom:18}}>
+        {["friends","family","professors"].map(v=>(
+          <button key={v} onClick={()=>setTab(v)} style={{flex:1,background:tab===v?C.accent:C.border,color:tab===v?"#000":C.muted,padding:"7px 3px",borderRadius:7,fontSize:10,fontWeight:600,textTransform:"capitalize"}}>
+            {v==="friends"?"👥 Friends":v==="family"?"👨‍👩‍👧‍👦 Family":"🎓 Professors"}
+          </button>
+        ))}
+      </div>
+
+      {tab==="friends"&&(
+        <div>
+          <Block title="What I'm Doing" color={C.accent}>
+            <div style={{fontSize:13,color:C.text,lineHeight:1.7}}>I'm on Day {day} of a 90-day cybersecurity accelerator my dad built for me before UCF. 1 hour every day with an AI mentor called Cipher. I'm learning to hack (legally), write security code, and I've already completed real cybersecurity challenges on TryHackMe.</div>
+          </Block>
+          {earnedBadges.length>0&&<Block title={`Badges Earned (${earnedBadges.length})`} color={C.gold}>
+            <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:8}}>{earnedBadges.map(b=><span key={b.id} style={{fontSize:24}}>{b.icon}</span>)}</div>
+            {earnedBadges.map(b=><div key={b.id} style={{fontSize:11,color:C.muted,marginBottom:2}}>{b.icon} {b.name} — {b.desc}</div>)}
+          </Block>}
+          <Block title={`Skills Proven (${skills.length})`} color={C.green}>
+            {skills.slice(-5).map((s,i)=><div key={i} style={{fontSize:12,color:C.muted,marginBottom:3}}>✓ {s.skill}</div>)}
+            {skills.length>5&&<div style={{fontSize:11,color:C.accent,marginTop:4}}>+ {skills.length-5} more confirmed skills</div>}
+          </Block>
+        </div>
+      )}
+
+      {tab==="family"&&(
+        <div>
+          <Block title="What Peyton Is Doing" color={C.gold}>
+            <div style={{fontSize:13,color:C.text,lineHeight:1.7}}>Peyton is completing a 90-day cybersecurity accelerator — 1 hour every single day — to prepare for UCF. He works with an AI mentor learning the same skills that professional cybersecurity analysts use. He doesn't just read about it — he builds things and proves his skills in real challenges online.</div>
+          </Block>
+          <Block title="In Plain English" color={C.green}>
+            {skills.slice(0,6).map((s,i)=><div key={i} style={{fontSize:13,color:C.text,marginBottom:5}}>✅ {s.skill}</div>)}
+            {skills.length>6&&<div style={{fontSize:12,color:C.accent}}>...and {skills.length-6} more proven skills</div>}
+          </Block>
+          {outsideDone.length>0&&<Block title="Real World Proof" color={C.green}>
+            <div style={{fontSize:13,color:C.text,lineHeight:1.7}}>Peyton has completed {outsideDone.length} real-world project{outsideDone.length>1?"s":""} outside the app and brought back documented proof — including live cybersecurity challenges on the same platforms used by professional security analysts.</div>
+          </Block>}
+          <div style={{background:`rgba(139,92,246,0.08)`,border:`1px solid rgba(139,92,246,0.25)`,borderRadius:11,padding:"12px 14px",marginBottom:12}}>
+            <div style={{fontSize:12,color:C.text,lineHeight:1.7,fontStyle:"italic"}}>"Peyton has spent {day} hours studying cybersecurity the same way professionals do — building real things and solving real problems. He enters UCF already thinking like a security professional."</div>
+            <div style={{fontSize:10,color:C.muted,marginTop:6}}>— Cipher AI, Day {day} Assessment</div>
+          </div>
+        </div>
+      )}
+
+      {tab==="professors"&&(
+        <div>
+          <Block title="Self-Directed Learning Summary" color={C.accent}>
+            <div style={{fontSize:12,color:C.muted,marginBottom:4}}>Duration: {day} of 90 days · Format: 1 hour/day · Mentor: Cipher AI (Claude-powered) · Streak: {streak} days</div>
+          </Block>
+          <Block title={`Verified Competencies (${skills.length})`} color={C.green}>
+            {skills.map((s,i)=>(
+              <div key={i} style={{display:"flex",gap:7,marginBottom:4}}>
+                <span style={{color:C.green,fontSize:11}}>✓</span>
+                <span style={{fontSize:12,color:C.text}}>{s.skill} <span style={{color:C.muted}}>— Day {s.day}</span></span>
               </div>
-              {earned && <div style={{ fontSize: 20 }}>✅</div>}
+            ))}
+          </Block>
+          {outsideDone.length>0&&<Block title="External Platform Completions" color={C.gold}>
+            {outsideDone.map(d=><div key={d} style={{fontSize:12,color:C.text,marginBottom:3}}>✅ Day {d} project — submitted and verified by AI evaluation</div>)}
+          </Block>}
+          {earnedBadges.length>0&&<Block title="Milestone Achievements" color={C.gold}>
+            {earnedBadges.map(b=><div key={b.id} style={{fontSize:12,color:C.text,marginBottom:3}}>{b.icon} {b.name} — {b.desc}</div>)}
+          </Block>}
+        </div>
+      )}
+
+      <button onClick={()=>{ navigator.clipboard?.writeText("https://peyton-accelerator.vercel.app"); alert("Portfolio link copied!"); }} style={{width:"100%",background:C.border,color:C.text,padding:"11px",borderRadius:9,fontSize:13,fontWeight:600,marginTop:8}}>📤 Share This Portfolio</button>
+    </div>
+  );
+}
+
+function Block({title,color,children}) {
+  return (
+    <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:11,padding:"12px 14px",marginBottom:10}}>
+      <div style={{fontSize:10,color,fontWeight:600,marginBottom:7}}>{title}</div>
+      {children}
+    </div>
+  );
+}
+
+// ---- BADGES ----
+function Badges({badges,testimonials,onBack}) {
+  return (
+    <div style={{minHeight:"100vh",background:C.bg,padding:20}}>
+      <style>{css}</style>
+      <button onClick={onBack} style={{background:"transparent",color:C.muted,fontSize:13,marginBottom:14,padding:"3px 0"}}>← Back</button>
+      <div style={{fontSize:9,color:C.gold,letterSpacing:3,textTransform:"uppercase",fontWeight:600,marginBottom:3}}>Badge Collection</div>
+      <div style={{fontSize:20,fontWeight:900,marginBottom:16}}>Your Achievements</div>
+      <div style={{display:"flex",flexDirection:"column",gap:9,marginBottom:20}}>
+        {ALL_BADGES.map(b=>{
+          const earned=badges.includes(b.id);
+          return (
+            <div key={b.id} style={{background:earned?"rgba(255,179,0,0.05)":C.card,border:`1px solid ${earned?"rgba(255,179,0,0.35)":C.border}`,borderRadius:11,padding:"12px 14px",display:"flex",alignItems:"center",gap:12,opacity:earned?1:0.4}}>
+              <div style={{fontSize:28}}>{b.icon}</div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:14,fontWeight:700,color:earned?C.gold:C.muted}}>{b.name}</div>
+                <div style={{fontSize:11,color:C.muted}}>{b.desc} · Day {b.day}</div>
+              </div>
+              {earned&&<span style={{fontSize:16}}>✅</span>}
             </div>
           );
         })}
       </div>
+      {testimonials.length>0&&<>
+        <div style={{fontSize:10,color:C.accent,fontWeight:600,marginBottom:8}}>YOUR WORDS AT PEAK MOMENTS</div>
+        {testimonials.map((t,i)=>(
+          <div key={i} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:9,padding:"10px 13px",marginBottom:8}}>
+            <div style={{fontSize:13,color:C.text,fontStyle:"italic",lineHeight:1.6}}>"{t.quote}"</div>
+            <div style={{fontSize:10,color:C.muted,marginTop:5}}>Day {t.day} · {t.badge||"Milestone"} · {t.date}</div>
+          </div>
+        ))}
+      </>}
     </div>
   );
 }
 
-// ============================================================
-// BADGE TOAST
-// ============================================================
-function BadgeToast({ badge }) {
+// ---- WELCOME ----
+function Welcome({onStart}) {
   return (
-    <div className="gold-glow" style={{ position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)", background: styles.card, border: `2px solid ${styles.gold}`, borderRadius: 16, padding: "16px 24px", zIndex: 9999, textAlign: "center", minWidth: 280, animation: "slideIn 0.4s ease" }}>
-      <div style={{ fontSize: 40, marginBottom: 8 }}>{badge.icon}</div>
-      <div style={{ fontSize: 12, color: styles.gold, letterSpacing: 2, textTransform: "uppercase", fontWeight: 600 }}>Badge Unlocked!</div>
-      <div style={{ fontSize: 18, fontWeight: 800, color: styles.text, marginTop: 4 }}>{badge.name}</div>
-      <div style={{ fontSize: 13, color: styles.muted, marginTop: 4 }}>{badge.desc}</div>
+    <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:24}}>
+      <style>{css}</style>
+      <div style={{maxWidth:400,width:"100%",textAlign:"center"}}>
+        <div style={{fontSize:11,color:C.accent,letterSpacing:3,textTransform:"uppercase",marginBottom:7}}>A Gift From Lane</div>
+        <div style={{fontSize:38,fontWeight:900,lineHeight:1.1,marginBottom:7}}>Peyton's<br /><span style={{color:C.accent}}>Accelerator</span></div>
+        <div style={{fontSize:14,color:C.muted,marginBottom:5}}>90 Days. 1 Hour Per Day.</div>
+        <div style={{fontSize:12,color:C.muted,marginBottom:28,fontStyle:"italic"}}>UCF Cybersecurity — Freshman Year</div>
+        <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:13,padding:18,marginBottom:20,textAlign:"left"}}>
+          <div style={{fontSize:11,fontWeight:600,color:C.gold,marginBottom:9}}>🎯 What You'll Walk Away With</div>
+          {["90+ confirmed skills in your portfolio","Real-world CTF and GitHub projects","10 milestone badges earned through proof","A living resume for friends, family, and professors","A 90-day head start on every UCF classmate"].map((item,i)=>(
+            <div key={i} style={{fontSize:13,color:C.text,marginBottom:5,display:"flex",gap:8}}><span style={{color:C.green}}>✓</span>{item}</div>
+          ))}
+        </div>
+        <div style={{fontSize:12,color:C.muted,fontStyle:"italic",marginBottom:22}}>"I fear not the man who has practiced 10,000 kicks once, but I fear the man who has practiced one kick 10,000 times." — Bruce Lee</div>
+        <button onClick={onStart} className="gl" style={{width:"100%",background:`linear-gradient(135deg,${C.accent},${C.plum})`,color:"#000",padding:"15px",borderRadius:13,fontSize:16,fontWeight:900}}>I'M READY — LET'S GO →</button>
+        <div style={{fontSize:10,color:C.muted,marginTop:9}}>Take your time. There is no rush. Your work matters.</div>
+      </div>
+    </div>
+  );
+}
+
+// ---- BADGE TOAST ----
+function BadgeToast({badge}) {
+  return (
+    <div className="gg si" style={{position:"fixed",top:18,left:"50%",transform:"translateX(-50%)",background:C.card,border:`2px solid ${C.gold}`,borderRadius:14,padding:"14px 22px",zIndex:9999,textAlign:"center",minWidth:260}}>
+      <div style={{fontSize:36,marginBottom:5}}>{badge.icon}</div>
+      <div style={{fontSize:10,color:C.gold,letterSpacing:2,textTransform:"uppercase",fontWeight:600}}>Badge Unlocked!</div>
+      <div style={{fontSize:16,fontWeight:800,marginTop:3}}>{badge.name}</div>
+      <div style={{fontSize:11,color:C.muted,marginTop:3}}>{badge.desc}</div>
+    </div>
+  );
+}
+
+// ---- TESTIMONIAL MODAL ----
+function TModal({badge,val,onChange,onSave,onSkip}) {
+  return (
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.82)",zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",padding:22}}>
+      <div style={{background:C.card,border:`2px solid ${C.gold}`,borderRadius:14,padding:22,maxWidth:370,width:"100%"}}>
+        <div style={{fontSize:26,textAlign:"center",marginBottom:7}}>{badge?.icon||"⚡"}</div>
+        <div style={{fontSize:14,fontWeight:700,textAlign:"center",color:C.gold,marginBottom:3}}>You earned {badge?.name||"a milestone"}!</div>
+        <div style={{fontSize:12,color:C.muted,textAlign:"center",marginBottom:14}}>What would you tell a friend who's thinking about this?</div>
+        <textarea value={val} onChange={e=>onChange(e.target.value)} placeholder="One honest sentence..." style={{width:"100%",background:C.bg,border:`1px solid ${C.border}`,borderRadius:9,padding:"9px 12px",color:C.text,fontSize:13,lineHeight:1.6,resize:"none",height:75,marginBottom:10}} />
+        <div style={{display:"flex",gap:7}}>
+          <button onClick={onSkip} style={{flex:1,background:C.border,color:C.muted,padding:"9px",borderRadius:7,fontSize:12}}>Skip</button>
+          <button onClick={onSave} style={{flex:2,background:`linear-gradient(135deg,${C.gold},#FF8C00)`,color:"#000",padding:"9px",borderRadius:7,fontSize:12,fontWeight:700}}>Save My Words</button>
+        </div>
+      </div>
     </div>
   );
 }
