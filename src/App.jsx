@@ -123,7 +123,11 @@ const css = `
 `;
 
 export default function App() {
-  const [screen, setScreen]             = useState("welcome");
+  // ── screen seeds from localStorage — skips welcome if Peyton has started ──
+  const [screen, setScreen] = useState(() => {
+    const savedDay = +localStorage.getItem("pd") || 1;
+    return savedDay > 1 ? "dashboard" : "welcome";
+  });
   const [day, setDay]                   = useState(() => +localStorage.getItem("pd")||1);
   const [badges, setBadges]             = useState(() => JSON.parse(localStorage.getItem("pb")||'["seed"]'));
   const [streak, setStreak]             = useState(() => +localStorage.getItem("ps")||0);
@@ -228,10 +232,10 @@ Respond: (1) specifically validate what he got RIGHT — quote his exact words b
     setTInput(""); setShowTModal(false); setPendingBadge(null);
   }
 
-  if(screen==="welcome") return <Welcome onStart={()=>setScreen("dashboard")} />;
-  if(screen==="badges")  return <Badges  badges={badges} testimonials={testimonials} onBack={()=>setScreen("dashboard")} />;
+  if(screen==="welcome")   return <Welcome onStart={()=>setScreen("dashboard")} />;
+  if(screen==="badges")    return <Badges  badges={badges} testimonials={testimonials} onBack={()=>setScreen("dashboard")} />;
   if(screen==="portfolio") return <Portfolio skills={skills} outside={outside} day={day} onBack={()=>setScreen("dashboard")} />;
-  if(screen==="resume")  return <Resume  skills={skills} badges={badges} outside={outside} day={day} streak={streak} tab={resumeTab} setTab={setResumeTab} onBack={()=>setScreen("dashboard")} />;
+  if(screen==="resume")    return <Resume  skills={skills} badges={badges} outside={outside} day={day} streak={streak} tab={resumeTab} setTab={setResumeTab} onBack={()=>setScreen("dashboard")} />;
 
   if(screen==="session") return (
     <Session cur={cur} msgs={msgs} input={input} setInput={setInput} loading={loading} phase={phase}
