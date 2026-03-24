@@ -122,8 +122,32 @@ const css = `
   .gg{box-shadow:0 0 20px rgba(255,179,0,0.4)}
 `;
 
+// ── Log day completion to backend ──
+async function logCompletion({ name, day, streak, skills, reflection }) {
+  try {
+    await fetch("/api/log", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        day,
+        streak,
+        skills,
+        reflection,
+        timestamp: new Date().toISOString(),
+      }),
+    });
+  } catch {
+    // Silent fail — never interrupt the user experience
+  }
+}
+
 export default function App() {
-  // ── screen seeds from localStorage — skips welcome if Peyton has started ──
+  // ── Name capture — shown once before anything else ──
+  const [userName, setUserName] = useState(() => localStorage.getItem("p_name") || "");
+  const [nameInput, setNameInput] = useState("");
+
+  // ── screen seeds from localStorage — skips welcome if user has started ──
   const [screen, setScreen] = useState(() => {
     const savedDay = +localStorage.getItem("pd") || 1;
     return savedDay > 1 ? "dashboard" : "welcome";
@@ -147,6 +171,7 @@ export default function App() {
   const [tInput, setTInput]             = useState("");
   const [pendingBadge, setPendingBadge] = useState(null);
   const [resumeTab, setResumeTab]       = useState("friends");
+  const [lastReflection, setLastReflection] = useState("");
   const endRef = useRef(null);
 
   const cur = getCurriculum(day);
@@ -161,6 +186,57 @@ export default function App() {
 
   useEffect(()=>{ endRef.current?.scrollIntoView({behavior:"smooth"}); },[msgs]);
 
+  // ── Name capture screen ──
+  if (!userName) {
+    return (
+      <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:24}}>
+        <style>{css}</style>
+        <div style={{maxWidth:380,width:"100%",textAlign:"center"}}>
+          <div style={{fontSize:11,color:C.accent,letterSpacing:3,textTransform:"uppercase",marginBottom:12}}>WinterHaven.AI</div>
+          <div style={{fontSize:32,fontWeight:900,lineHeight:1.2,marginBottom:8}}>Before we begin —</div>
+          <div style={{fontSize:16,color:C.muted,marginBottom:36,lineHeight:1.6}}>What's your first name?</div>
+          <input
+            value={nameInput}
+            onChange={e => setNameInput(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === "Enter" && nameInput.trim()) {
+                const name = nameInput.trim();
+                localStorage.setItem("p_name", name);
+                setUserName(name);
+              }
+            }}
+            placeholder="Your first name..."
+            autoFocus
+            style={{
+              width:"100%", background:C.card, border:`1px solid ${C.border}`,
+              borderRadius:12, padding:"16px 20px", color:C.text,
+              fontSize:20, marginBottom:16, textAlign:"center",
+            }}
+          />
+          <button
+            onClick={() => {
+              if (nameInput.trim()) {
+                const name = nameInput.trim();
+                localStorage.setItem("p_name", name);
+                setUserName(name);
+              }
+            }}
+            disabled={!nameInput.trim()}
+            className="gl"
+            style={{
+              width:"100%", background:nameInput.trim()?`linear-gradient(135deg,${C.accent},${C.plum})`:C.border,
+              color:"#000", padding:"15px", borderRadius:12,
+              fontSize:16, fontWeight:900,
+              opacity: nameInput.trim() ? 1 : 0.5,
+            }}
+          >
+            Let's Go →
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   async function cipher(sys, ms) {
     try {
       const r = await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({system:sys,messages:ms})});
@@ -171,9 +247,9 @@ export default function App() {
 
   async function startSession() {
     setScreen("session"); setPhase("chat"); setMsgs([]); setReflection(""); setAffirmation(""); setOutText(""); setOutEval(""); setLoading(true);
-    const sys = `You are Cipher — Peyton Bowers' personal AI cybersecurity mentor. Peyton is 17, heading to UCF for cybersecurity. He's on Day ${day} of a 90-day accelerator his father Lane built him. Streak: ${streak} days.
+    const sys = `You are Cipher — ${userName}'s personal AI cybersecurity mentor. ${userName} is heading to UCF for cybersecurity. They're on Day ${day} of a 90-day accelerator their father Lane built. Streak: ${streak} days.
 TODAY: "${cur.title}" | MISSION: ${cur.mission} | DELIVERABLE: ${cur.deliverable}
-Open with energy. Reference his day and streak. Connect to UCF. End with a specific first challenge. 4-6 sentences max.`;
+Open with energy. Reference their day and streak. Connect to UCF. End with a specific first challenge. 4-6 sentences max.`;
     const t = await cipher(sys,[{role:"user",content:`Start Day ${day}`}]);
     setMsgs([{role:"assistant",content:t}]); setLoading(false);
   }
@@ -182,27 +258,28 @@ Open with energy. Reference his day and streak. Connect to UCF. End with a speci
     if(!input.trim()||loading) return;
     const u = input.trim(); setInput("");
     const nm = [...msgs,{role:"user",content:u}]; setMsgs(nm); setLoading(true);
-    const sys = `You are Cipher — Peyton's cybersecurity AI mentor. Day ${day}. Topic: ${cur.title}. Direct, technical, encouraging. Max 4 sentences unless detail is requested.`;
+    const sys = `You are Cipher — ${userName}'s cybersecurity AI mentor. Day ${day}. Topic: ${cur.title}. Direct, technical, encouraging. Max 4 sentences unless detail is requested.`;
     const t = await cipher(sys,nm);
     setMsgs(p=>[...p,{role:"assistant",content:t}]); setLoading(false);
   }
 
   async function startReflection() {
     setPhase("reflection"); setLoading(true);
-    const sys = `You are Cipher — Peyton's mentor. He just finished Day ${day}: "${cur.title}". Ask ONE closing reflection question requiring him to explain the most important thing he learned TODAY in his own words. Specific to today's topic. 2 sentences max.`;
+    const sys = `You are Cipher — ${userName}'s mentor. They just finished Day ${day}: "${cur.title}". Ask ONE closing reflection question requiring them to explain the most important thing they learned TODAY in their own words. Specific to today's topic. 2 sentences max.`;
     const t = await cipher(sys,[{role:"user",content:"Ask my closing reflection question."}]);
     setMsgs(p=>[...p,{role:"assistant",content:t,isR:true}]); setLoading(false);
   }
 
   async function submitReflection() {
     if(!reflection.trim()) return;
+    setLastReflection(reflection);
     setLoading(true);
     const ds = DAY_SKILLS[day]||[`Completed Day ${day} cybersecurity study`];
-    const sys = `You are Cipher — Peyton's mentor. He answered his Day ${day} closing reflection: "${cur.title}".
-His answer: "${reflection}"
+    const sys = `You are Cipher — ${userName}'s mentor. They answered their Day ${day} closing reflection: "${cur.title}".
+Their answer: "${reflection}"
 Proven skills for today: ${ds.join(", ")}
-Respond: (1) specifically validate what he got RIGHT — quote his exact words back, (2) add one key insight he can build on, (3) name each skill he has NOW PROVEN specifically, (4) end with a powerful 1-sentence confidence statement about UCF.
-6-8 sentences. Make him feel the weight of this.`;
+Respond: (1) specifically validate what they got RIGHT — quote their exact words back, (2) add one key insight they can build on, (3) name each skill they have NOW PROVEN specifically, (4) end with a powerful 1-sentence confidence statement about UCF.
+6-8 sentences. Make them feel the weight of this.`;
     const t = await cipher(sys,[{role:"user",content:reflection}]);
     setAffirmation(t); setPhase("affirm");
     const ns = [...skills]; ds.forEach(sk=>{ if(!ns.find(s=>s.skill===sk)) ns.push({day,skill:sk,date:new Date().toLocaleDateString()}); });
@@ -213,18 +290,30 @@ Respond: (1) specifically validate what he got RIGHT — quote his exact words b
     if(!outText.trim()) return;
     setLoading(true);
     const proj = OUTSIDE_PROJECTS[day];
-    const sys = `You are Cipher — Peyton's mentor. He completed a real-world outside project for Day ${day}. ${proj.cipherEval}\nHis submission: "${outText}"\n6-8 sentences. Be specific. Name exact skills proven. Make it feel like graduation.`;
+    const sys = `You are Cipher — ${userName}'s mentor. They completed a real-world outside project for Day ${day}. ${proj.cipherEval}\nTheir submission: "${outText}"\n6-8 sentences. Be specific. Name exact skills proven. Make it feel like graduation.`;
     const t = await cipher(sys,[{role:"user",content:outText}]);
     setOutEval(t); setOutside(p=>({...p,[day]:{submitted:true,content:outText,eval:t}})); setLoading(false);
   }
 
-  function completeDay() {
+  async function completeDay() {
+    const completedDay = day;
     const nd = day+1; const ns = streak+1; setStreak(ns); setDay(nd);
     const nb = [...badges]; let newB = null;
     ALL_BADGES.forEach(b=>{ if(!nb.includes(b.id)&&nd>b.day){ nb.push(b.id); newB=b; } });
     setBadges(nb);
+
+    // ── Log to backend ──
+    const ds = DAY_SKILLS[completedDay] || [`Completed Day ${completedDay} cybersecurity study`];
+    await logCompletion({
+      name: userName,
+      day: completedDay,
+      streak: ns,
+      skills: ds,
+      reflection: lastReflection,
+    });
+
     if(newB){ setPendingBadge(newB); setShowBadge(newB); setTimeout(()=>{ setShowBadge(null); setShowTModal(true); },3000); }
-    setMsgs([]); setPhase("chat"); setReflection(""); setAffirmation(""); setOutText(""); setOutEval(""); setScreen("dashboard");
+    setMsgs([]); setPhase("chat"); setReflection(""); setAffirmation(""); setOutText(""); setOutEval(""); setLastReflection(""); setScreen("dashboard");
   }
 
   function saveTesimonial() {
@@ -232,10 +321,10 @@ Respond: (1) specifically validate what he got RIGHT — quote his exact words b
     setTInput(""); setShowTModal(false); setPendingBadge(null);
   }
 
-  if(screen==="welcome")   return <Welcome onStart={()=>setScreen("dashboard")} />;
+  if(screen==="welcome")   return <Welcome name={userName} onStart={()=>setScreen("dashboard")} />;
   if(screen==="badges")    return <Badges  badges={badges} testimonials={testimonials} onBack={()=>setScreen("dashboard")} />;
   if(screen==="portfolio") return <Portfolio skills={skills} outside={outside} day={day} onBack={()=>setScreen("dashboard")} />;
-  if(screen==="resume")    return <Resume  skills={skills} badges={badges} outside={outside} day={day} streak={streak} tab={resumeTab} setTab={setResumeTab} onBack={()=>setScreen("dashboard")} />;
+  if(screen==="resume")    return <Resume  skills={skills} badges={badges} outside={outside} day={day} streak={streak} name={userName} tab={resumeTab} setTab={setResumeTab} onBack={()=>setScreen("dashboard")} />;
 
   if(screen==="session") return (
     <Session cur={cur} msgs={msgs} input={input} setInput={setInput} loading={loading} phase={phase}
@@ -244,7 +333,7 @@ Respond: (1) specifically validate what he got RIGHT — quote his exact words b
       outsideProj={OUTSIDE_PROJECTS[day]} outside={outside}
       onSend={send} onStartReflect={startReflection} onSubmitReflect={submitReflection}
       onSubmitOut={submitOutside} onComplete={completeDay} onBack={()=>setScreen("dashboard")}
-      endRef={endRef} streak={streak} />
+      endRef={endRef} streak={streak} name={userName} />
   );
 
   const prog = Math.round((day/90)*100);
@@ -258,7 +347,7 @@ Respond: (1) specifically validate what he got RIGHT — quote his exact words b
       <div style={{background:C.card,borderBottom:`1px solid ${C.border}`,padding:"12px 18px",display:"flex",justifyContent:"space-between",alignItems:"center",position:"sticky",top:0,zIndex:100}}>
         <div>
           <div style={{fontSize:9,color:C.accent,letterSpacing:2,textTransform:"uppercase",fontWeight:600}}>WinterHaven.AI</div>
-          <div style={{fontSize:16,fontWeight:700}}>Peyton's Accelerator</div>
+          <div style={{fontSize:16,fontWeight:700}}>{userName}'s Accelerator</div>
         </div>
         <div style={{display:"flex",gap:6,alignItems:"center"}}>
           <div style={{textAlign:"center",marginRight:4}}>
@@ -378,7 +467,7 @@ Respond: (1) specifically validate what he got RIGHT — quote his exact words b
 }
 
 // ---- SESSION ----
-function Session({cur,msgs,input,setInput,loading,phase,reflection,setReflection,affirmation,hasOut,outDone,outText,setOutText,outEval,outsideProj,outside,onSend,onStartReflect,onSubmitReflect,onSubmitOut,onComplete,onBack,endRef,streak}) {
+function Session({cur,msgs,input,setInput,loading,phase,reflection,setReflection,affirmation,hasOut,outDone,outText,setOutText,outEval,outsideProj,outside,onSend,onStartReflect,onSubmitReflect,onSubmitOut,onComplete,onBack,endRef,streak,name}) {
   const canReflect = msgs.filter(m=>m.role==="user").length>=2;
   return (
     <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column"}}>
@@ -396,7 +485,7 @@ function Session({cur,msgs,input,setInput,loading,phase,reflection,setReflection
         {msgs.length===0&&<div style={{textAlign:"center",padding:"40px 20px",color:C.muted}}><div style={{fontSize:36,marginBottom:10}}>⚡</div><div style={{fontSize:14,fontWeight:600,color:C.text}}>Loading Cipher...</div></div>}
         {msgs.map((m,i)=>(
           <div key={i} className="si" style={{display:"flex",flexDirection:"column",alignItems:m.role==="user"?"flex-end":"flex-start"}}>
-            <div style={{fontSize:9,color:C.muted,marginBottom:3,padding:"0 4px"}}>{m.role==="user"?"Peyton":"Cipher"}</div>
+            <div style={{fontSize:9,color:C.muted,marginBottom:3,padding:"0 4px"}}>{m.role==="user"?name:"Cipher"}</div>
             <div style={{maxWidth:"88%",padding:"10px 13px",borderRadius:m.role==="user"?"14px 14px 4px 14px":"14px 14px 14px 4px",background:m.isR?"rgba(255,179,0,0.08)":m.role==="user"?`linear-gradient(135deg,${C.accent},${C.plum})`:C.card,border:m.role!=="user"?`1px solid ${m.isR?"rgba(255,179,0,0.3)":C.border}`:"none",color:m.role==="user"?"#000":C.text,fontSize:13,lineHeight:1.7}}>{m.content}</div>
           </div>
         ))}
@@ -462,7 +551,7 @@ function Portfolio({skills,outside,day,onBack}) {
       <style>{css}</style>
       <button onClick={onBack} style={{background:"transparent",color:C.muted,fontSize:13,marginBottom:14,padding:"3px 0"}}>← Back</button>
       <div style={{fontSize:9,color:C.green,letterSpacing:3,textTransform:"uppercase",fontWeight:600,marginBottom:3}}>Skills Portfolio</div>
-      <div style={{fontSize:20,fontWeight:900,marginBottom:3}}>What Peyton Can Do</div>
+      <div style={{fontSize:20,fontWeight:900,marginBottom:3}}>What I Can Do</div>
       <div style={{fontSize:12,color:C.muted,marginBottom:18}}>{skills.length} skills confirmed · {Object.keys(grouped).length} days</div>
       {skills.length===0&&<div style={{textAlign:"center",padding:"40px 20px",color:C.muted}}><div style={{fontSize:28,marginBottom:10}}>📋</div>Complete Day 1 to start building your portfolio.</div>}
       {Object.keys(grouped).sort((a,b)=>+a-+b).map(d=>(
@@ -487,7 +576,7 @@ function Portfolio({skills,outside,day,onBack}) {
 }
 
 // ---- RESUME ----
-function Resume({skills,badges,outside,day,streak,tab,setTab,onBack}) {
+function Resume({skills,badges,outside,day,streak,name,tab,setTab,onBack}) {
   const outsideDone = Object.keys(outside).filter(d=>outside[d].submitted);
   const earnedBadges = ALL_BADGES.filter(b=>badges.includes(b.id));
   return (
@@ -495,7 +584,7 @@ function Resume({skills,badges,outside,day,streak,tab,setTab,onBack}) {
       <style>{css}</style>
       <button onClick={onBack} style={{background:"transparent",color:C.muted,fontSize:13,marginBottom:14,padding:"3px 0"}}>← Back</button>
       <div style={{fontSize:9,color:C.accent,letterSpacing:3,textTransform:"uppercase",fontWeight:600,marginBottom:3}}>Living Resume</div>
-      <div style={{fontSize:20,fontWeight:900,marginBottom:2}}>Peyton Bowers</div>
+      <div style={{fontSize:20,fontWeight:900,marginBottom:2}}>{name}</div>
       <div style={{fontSize:12,color:C.muted,marginBottom:14}}>Cybersecurity Professional in Training · Day {day} of 90 · {streak} day streak</div>
 
       <div style={{display:"flex",gap:7,marginBottom:18}}>
@@ -524,18 +613,18 @@ function Resume({skills,badges,outside,day,streak,tab,setTab,onBack}) {
 
       {tab==="family"&&(
         <div>
-          <Block title="What Peyton Is Doing" color={C.gold}>
-            <div style={{fontSize:13,color:C.text,lineHeight:1.7}}>Peyton is completing a 90-day cybersecurity accelerator — 1 hour every single day — to prepare for UCF. He works with an AI mentor learning the same skills that professional cybersecurity analysts use. He doesn't just read about it — he builds things and proves his skills in real challenges online.</div>
+          <Block title={`What ${name} Is Doing`} color={C.gold}>
+            <div style={{fontSize:13,color:C.text,lineHeight:1.7}}>{name} is completing a 90-day cybersecurity accelerator — 1 hour every single day — to prepare for UCF. They work with an AI mentor learning the same skills that professional cybersecurity analysts use. They don't just read about it — they build things and prove their skills in real challenges online.</div>
           </Block>
           <Block title="In Plain English" color={C.green}>
             {skills.slice(0,6).map((s,i)=><div key={i} style={{fontSize:13,color:C.text,marginBottom:5}}>✅ {s.skill}</div>)}
             {skills.length>6&&<div style={{fontSize:12,color:C.accent}}>...and {skills.length-6} more proven skills</div>}
           </Block>
           {outsideDone.length>0&&<Block title="Real World Proof" color={C.green}>
-            <div style={{fontSize:13,color:C.text,lineHeight:1.7}}>Peyton has completed {outsideDone.length} real-world project{outsideDone.length>1?"s":""} outside the app and brought back documented proof — including live cybersecurity challenges on the same platforms used by professional security analysts.</div>
+            <div style={{fontSize:13,color:C.text,lineHeight:1.7}}>{name} has completed {outsideDone.length} real-world project{outsideDone.length>1?"s":""} outside the app and brought back documented proof — including live cybersecurity challenges on the same platforms used by professional security analysts.</div>
           </Block>}
           <div style={{background:`rgba(139,92,246,0.08)`,border:`1px solid rgba(139,92,246,0.25)`,borderRadius:11,padding:"12px 14px",marginBottom:12}}>
-            <div style={{fontSize:12,color:C.text,lineHeight:1.7,fontStyle:"italic"}}>"Peyton has spent {day} hours studying cybersecurity the same way professionals do — building real things and solving real problems. He enters UCF already thinking like a security professional."</div>
+            <div style={{fontSize:12,color:C.text,lineHeight:1.7,fontStyle:"italic"}}>"{name} has spent {day} hours studying cybersecurity the same way professionals do — building real things and solving real problems. They enter UCF already thinking like a security professional."</div>
             <div style={{fontSize:10,color:C.muted,marginTop:6}}>— Cipher AI, Day {day} Assessment</div>
           </div>
         </div>
@@ -614,13 +703,13 @@ function Badges({badges,testimonials,onBack}) {
 }
 
 // ---- WELCOME ----
-function Welcome({onStart}) {
+function Welcome({name, onStart}) {
   return (
     <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:24}}>
       <style>{css}</style>
       <div style={{maxWidth:400,width:"100%",textAlign:"center"}}>
         <div style={{fontSize:11,color:C.accent,letterSpacing:3,textTransform:"uppercase",marginBottom:7}}>A Gift From Lane</div>
-        <div style={{fontSize:38,fontWeight:900,lineHeight:1.1,marginBottom:7}}>Peyton's<br /><span style={{color:C.accent}}>Accelerator</span></div>
+        <div style={{fontSize:38,fontWeight:900,lineHeight:1.1,marginBottom:7}}>{name}'s<br /><span style={{color:C.accent}}>Accelerator</span></div>
         <div style={{fontSize:14,color:C.muted,marginBottom:5}}>90 Days. 1 Hour Per Day.</div>
         <div style={{fontSize:12,color:C.muted,marginBottom:28,fontStyle:"italic"}}>UCF Cybersecurity — Freshman Year</div>
         <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:13,padding:18,marginBottom:20,textAlign:"left"}}>
