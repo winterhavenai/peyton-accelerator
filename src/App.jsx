@@ -237,6 +237,24 @@ export default function App() {
     );
   }
 
+  async function getCipherContext(topic) {
+    try {
+      const r = await fetch("/api/notebook-context", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic }),
+      });
+      const d = await r.json();
+      if (d.context) {
+        console.log("[Cipher] Grounded context loaded for:", topic);
+        return `[GROUNDED RESEARCH CONTEXT]\n${d.context}\n[END CONTEXT]\n\n`;
+      }
+      return "";
+    } catch {
+      return "";
+    }
+  }
+
   async function cipher(sys, ms) {
     try {
       const r = await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({system:sys,messages:ms})});
@@ -247,7 +265,8 @@ export default function App() {
 
   async function startSession() {
     setScreen("session"); setPhase("chat"); setMsgs([]); setReflection(""); setAffirmation(""); setOutText(""); setOutEval(""); setLoading(true);
-    const sys = `You are Cipher — ${userName}'s personal AI cybersecurity mentor. ${userName} is heading to UCF for cybersecurity. They're on Day ${day} of a 90-day accelerator their father Lane built. Streak: ${streak} days.
+    const ctx = await getCipherContext(cur.title);
+    const sys = `${ctx}You are Cipher — ${userName}'s personal AI cybersecurity mentor. ${userName} is heading to UCF for cybersecurity. They're on Day ${day} of a 90-day accelerator their father Lane built. Streak: ${streak} days.
 TODAY: "${cur.title}" | MISSION: ${cur.mission} | DELIVERABLE: ${cur.deliverable}
 Open with energy. Reference their day and streak. Connect to UCF. End with a specific first challenge. 4-6 sentences max.`;
     const t = await cipher(sys,[{role:"user",content:`Start Day ${day}`}]);
@@ -258,14 +277,16 @@ Open with energy. Reference their day and streak. Connect to UCF. End with a spe
     if(!input.trim()||loading) return;
     const u = input.trim(); setInput("");
     const nm = [...msgs,{role:"user",content:u}]; setMsgs(nm); setLoading(true);
-    const sys = `You are Cipher — ${userName}'s cybersecurity AI mentor. Day ${day}. Topic: ${cur.title}. Direct, technical, encouraging. Max 4 sentences unless detail is requested.`;
+    const ctx = await getCipherContext(cur.title);
+    const sys = `${ctx}You are Cipher — ${userName}'s cybersecurity AI mentor. Day ${day}. Topic: ${cur.title}. Direct, technical, encouraging. Max 4 sentences unless detail is requested.`;
     const t = await cipher(sys,nm);
     setMsgs(p=>[...p,{role:"assistant",content:t}]); setLoading(false);
   }
 
   async function startReflection() {
     setPhase("reflection"); setLoading(true);
-    const sys = `You are Cipher — ${userName}'s mentor. They just finished Day ${day}: "${cur.title}". Ask ONE closing reflection question requiring them to explain the most important thing they learned TODAY in their own words. Specific to today's topic. 2 sentences max.`;
+    const ctx = await getCipherContext(cur.title);
+    const sys = `${ctx}You are Cipher — ${userName}'s mentor. They just finished Day ${day}: "${cur.title}". Ask ONE closing reflection question requiring them to explain the most important thing they learned TODAY in their own words. Specific to today's topic. 2 sentences max.`;
     const t = await cipher(sys,[{role:"user",content:"Ask my closing reflection question."}]);
     setMsgs(p=>[...p,{role:"assistant",content:t,isR:true}]); setLoading(false);
   }
