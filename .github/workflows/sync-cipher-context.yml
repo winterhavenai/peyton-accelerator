@@ -1,0 +1,41 @@
+name: Sync CIPHER-KNOWLEDGE-BASE
+
+on:
+  schedule:
+    - cron: '0 7 * * 0'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install notebooklm-py
+        run: pip install "notebooklm-py[browser]"
+
+      - name: Install Playwright
+        run: python -m playwright install chromium
+
+      - name: Write NotebookLM auth from secret
+        run: |
+          mkdir -p ~/.notebooklm
+          echo '${{ secrets.NOTEBOOKLM_AUTH_JSON }}' > ~/.notebooklm/storage_state.json
+
+      - name: Run precompute script
+        run: python scripts/precompute_cipher_context.py
+
+      - name: Commit updated context
+        run: |
+          git config --global user.name "WinterHaven Bot"
+          git config --global user.email "bot@winterhaven.ai"
+          git add src/cipherContext.json
+          git diff --staged --quiet || git commit -m "chore: auto-sync CIPHER-KNOWLEDGE-BASE $(date +%Y-%m-%d)"
+          git push
