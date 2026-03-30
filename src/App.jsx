@@ -42,22 +42,22 @@ const OUTSIDE_PROJECTS = {
   7: {
     mission: "Leave the app. Open a terminal (Mac: Terminal app, Windows: PowerShell or search 'cmd'). Run these 4 commands one at a time: pwd — then ls — then cd .. — then whoami. Screenshot the results or copy/paste what you see. Come back and paste it here.",
     placeholder: "Paste your terminal output here, or describe what each command showed you...",
-    cipherEval: "evaluate this Linux terminal output from Peyton, a 17-year-old cybersecurity student. Tell him specifically what each command revealed, confirm he understands it, and explain why these commands matter in real security work. Make it affirming and specific."
+    cipherEval: "evaluate this Linux terminal output from the student. Tell them specifically what each command revealed, confirm they understand it, and explain why these commands matter in real security work. Make it affirming and specific."
   },
   12: {
     mission: "Leave the app. Go to tryhackme.com — create a free account if you don't have one. Click 'Learn' then find the 'Pre-Security' path. Complete at least ONE room all the way through. Come back and paste the room name and your score or what you learned.",
     placeholder: "Room name, score, and what you actually learned from completing it...",
-    cipherEval: "evaluate this TryHackMe room completion from Peyton, a 17-year-old preparing for UCF cybersecurity. Name the specific skills this proves. Tell him what a UCF professor would think. Make this feel like the milestone it is."
+    cipherEval: "evaluate this TryHackMe room completion from the student. Name the specific skills this proves. Make this feel like the milestone it is."
   },
   23: {
     mission: "Leave the app. Go to tryhackme.com. Complete 2 more rooms in any path. For each room: write the name, your score, and 2 things you learned. Come back and paste all of it. This is your Flag Catcher proof.",
     placeholder: "Room 1 name + score + 2 learnings. Room 2 name + score + 2 learnings...",
-    cipherEval: "evaluate these TryHackMe CTF results from Peyton. Be specific about what skills each room proved. This is his Flag Catcher badge moment — make the affirmation powerful and name exactly what he can now do."
+    cipherEval: "evaluate these TryHackMe CTF results from the student. Be specific about what skills each room proved. This is their Flag Catcher badge moment — make the affirmation powerful and name exactly what they can now do."
   },
   30: {
     mission: "Leave the app. Go to github.com — create a free account if needed. Create a new repository called 'security-portfolio'. Upload at least one script, document, or project from your last 30 days. Add a README explaining what it does. Come back and paste your GitHub profile link or repo link.",
     placeholder: "Your GitHub link + describe what you uploaded and what it does...",
-    cipherEval: "evaluate this GitHub portfolio submission from Peyton at his 30-day milestone. Confirm what the work proves. Tell him what a UCF professor or security recruiter would think seeing this. Name the specific skills it demonstrates. Make it feel like graduation."
+    cipherEval: "evaluate this GitHub portfolio submission from the student at their 30-day milestone. Confirm what the work proves. Name the specific skills it demonstrates. Make it feel like graduation."
   },
 };
 
@@ -519,7 +519,7 @@ Respond: (1) specifically validate what they got RIGHT — quote their exact wor
         <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:"12px 14px",marginBottom:14}}>
           <div style={{fontSize:9,color:C.accent,letterSpacing:2,textTransform:"uppercase",fontWeight:600,marginBottom:6}}>Share Your Progress</div>
           <div style={{display:"flex",gap:8}}>
-            <button onClick={()=>{ navigator.clipboard?.writeText("https://peyton-accelerator.vercel.app"); alert("Link copied! Send it to a friend."); }} style={{flex:1,background:C.border,color:C.text,padding:"9px",borderRadius:8,fontSize:12,fontWeight:600}}>📤 Share App Link</button>
+            <button onClick={()=>{ navigator.clipboard?.writeText("https://theforcemultiplier.ai"); alert("Link copied! Send it to a friend."); }} style={{flex:1,background:C.border,color:C.text,padding:"9px",borderRadius:8,fontSize:12,fontWeight:600}}>📤 Share App Link</button>
             {skills.length>=3&&<button onClick={()=>setScreen("resume")} style={{flex:1,background:"transparent",border:`1px solid ${C.accent}`,color:C.accent,padding:"9px",borderRadius:8,fontSize:12,fontWeight:600}}>📄 Show Resume</button>}
           </div>
         </div>
@@ -714,7 +714,7 @@ function Resume({skills,badges,outside,day,streak,name,tab,setTab,onBack}) {
         </div>
       )}
 
-      <button onClick={()=>{ navigator.clipboard?.writeText("https://peyton-accelerator.vercel.app"); alert("Portfolio link copied!"); }} style={{width:"100%",background:C.border,color:C.text,padding:"11px",borderRadius:9,fontSize:13,fontWeight:600,marginTop:8}}>📤 Share This Portfolio</button>
+      <button onClick={()=>{ navigator.clipboard?.writeText("https://theforcemultiplier.ai"); alert("Portfolio link copied!"); }} style={{width:"100%",background:C.border,color:C.text,padding:"11px",borderRadius:9,fontSize:13,fontWeight:600,marginTop:8}}>📤 Share This Portfolio</button>
     </div>
   );
 }
