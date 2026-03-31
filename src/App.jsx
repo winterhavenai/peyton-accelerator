@@ -35,7 +35,7 @@ const DAY_SKILLS = {
   15: ["Can explain firewalls, IDS, and VPNs","Understands how a SOC analyst uses these tools","Designed a basic network defense architecture"],
   18: ["Can write a professional vulnerability report","Understands CVE format and severity ratings","Has a report that looks like real security work"],
   23: ["PROVEN IN CTF: completed TryHackMe challenges in live environment","Can document methodology for a security challenge","Understands CTF format used by professional security teams"],
-  30: ["PROVEN ON GITHUB: published real security portfolio","30 consecutive days of 1-hour cybersecurity study","Has more security knowledge than most UCF graduates entering freshman year"],
+  30: ["PROVEN ON GITHUB: published real security portfolio","30 consecutive days of 1-hour cybersecurity study","Has more security knowledge than most graduates entering freshman year"],
 };
 
 const OUTSIDE_PROJECTS = {
@@ -64,9 +64,9 @@ const OUTSIDE_PROJECTS = {
 const CURRICULUM = {
   1:  { phase:"SPARK",     day:1,  week:1, title:"SEE IT — Discover AI Through Cybersecurity",    quote:QUOTES.day1,       mission:"Ask Claude to explain the cybersecurity landscape in 2026. What are the top threats? What does a day in the life of a security analyst look like? What skills pay the most? Have a real conversation — argue, push back, go deep.", deliverable:"Your first AI conversation about cybersecurity — saved.", tools:["Claude.ai","Perplexity AI"], badge:null, duration:60 },
   2:  { phase:"SPARK",     day:2,  week:1, title:"PROMPT IT — Learn to Talk to AI Like an Analyst", quote:QUOTES.day2,     mission:"Master the 3-Part Prompt Formula: Context + Request + Format. Practice prompting Claude to explain attack vectors, write threat summaries, and analyze vulnerabilities. Build your first 5-prompt cybersecurity library.", deliverable:"Your Personal Cybersecurity Prompt Library — 5 reusable prompts.", tools:["Claude.ai"], badge:null, duration:60 },
-  3:  { phase:"SPARK",     day:3,  week:1, title:"APPLY IT — Build Your First Real Security Asset", quote:QUOTES.day3,     mission:"Choose: (A) Write an AI-assisted threat report on a real recent breach. (B) Build a personal cybersecurity study plan for UCF freshman year. (C) Create a network security checklist for your home.", deliverable:"A document you could show a UCF professor on Day 1.", tools:["Claude.ai","Google Docs"], badge:null, duration:60 },
+  3:  { phase:"SPARK",     day:3,  week:1, title:"APPLY IT — Build Your First Real Security Asset", quote:QUOTES.day3,     mission:"Choose: (A) Write an AI-assisted threat report on a real recent breach. (B) Build a personal cybersecurity study plan for your freshman year. (C) Create a network security checklist for your home.", deliverable:"A document you could show a professor on Day 1.", tools:["Claude.ai","Google Docs"], badge:null, duration:60 },
   4:  { phase:"SPARK",     day:4,  week:1, title:"REMIX IT — Explore the Cybersecurity AI Ecosystem", quote:QUOTES.day4,   mission:"Discover the tools used by real security professionals: TryHackMe, GitHub Copilot, Kali Linux, Shodan. Use Claude to explain each one and how you'd use it.", deliverable:"Your Personal Cybersecurity Tool Stack document.", tools:["Claude.ai","TryHackMe","GitHub"], badge:null, duration:60 },
-  5:  { phase:"SPARK",     day:5,  week:1, title:"KEEP IT GOING — Design Your 90-Day Plan",        quote:QUOTES.day5,       mission:"Build your pre-UCF AI practice plan. One hour per day, structured across 90 days. Use Claude as your planning partner. Write your personal commitment statement.", deliverable:"Your 90-Day Plan + Personal Commitment.", tools:["Claude.ai"], badge:"⚡ The SPARK — 5-Day Onramp Complete", duration:60 },
+  5:  { phase:"SPARK",     day:5,  week:1, title:"KEEP IT GOING — Design Your 90-Day Plan",        quote:QUOTES.day5,       mission:"Build your 90-day AI practice plan. One hour per day, structured across 90 days. Use Claude as your planning partner. Write your personal commitment statement.", deliverable:"Your 90-Day Plan + Personal Commitment.", tools:["Claude.ai"], badge:"⚡ The SPARK — 5-Day Onramp Complete", duration:60 },
   6:  { phase:"Foundation",day:6,  week:2, title:"Networking Fundamentals with AI",                  quote:QUOTES.growth,     mission:"Use Claude to master OSI model, TCP/IP, DNS, HTTP/HTTPS. Ask it to explain each layer. Then quiz yourself — have Claude ask YOU the questions.", deliverable:"Networking concepts summary in your own words.", tools:["Claude.ai"], badge:null, duration:60 },
   7:  { phase:"Foundation",day:7,  week:2, title:"Linux Command Line — First Real Terminal Session", quote:QUOTES.excellence, mission:"Learn the 20 most important Linux commands for cybersecurity with Claude. Then complete the OUTSIDE PROJECT — your first real terminal session with proof.", deliverable:"Linux Command Cheat Sheet + real terminal output.", tools:["Claude.ai","Terminal"], badge:null, duration:60 },
   8:  { phase:"Foundation",day:8,  week:2, title:"Cryptography Fundamentals",                        quote:QUOTES.wisdom,     mission:"Ask Claude to explain encryption, hashing, and digital signatures. How does HTTPS work? What is a hash collision? Why does password salting matter?", deliverable:"Cryptography concept map.", tools:["Claude.ai"], badge:null, duration:60 },
@@ -82,14 +82,14 @@ const CURRICULUM = {
   18: { phase:"Builder",   day:18, week:4, title:"Write Your First Vulnerability Report",            quote:QUOTES.day3,       mission:"A vulnerability report is the core deliverable of a security professional. Use Claude to write a professional report on a known CVE.", deliverable:"Your first professional vulnerability report.", tools:["Claude.ai"], badge:"🐧 The Linux Learner — Terminal Skills Established", duration:60 },
   23: { phase:"Builder",   day:23, week:6, title:"CTF Deep Dive — TryHackMe Level 2 + Proof",       quote:QUOTES.resilience, mission:"Use Claude to prep for intermediate CTF challenges. Then complete the OUTSIDE PROJECT — 2 more TryHackMe rooms with documented proof.", deliverable:"2 CTF rooms completed + methodology documented.", tools:["TryHackMe","Claude.ai"], badge:"🏴 The Flag Catcher — CTF Challenges Complete", duration:60 },
   30: { phase:"Builder",   day:30, week:8, title:"30-DAY GRADUATION — GitHub Portfolio Launch",      quote:QUOTES.day5,       mission:"Review your full journey. Complete the OUTSIDE PROJECT — publish your GitHub security portfolio. This is your first public proof of who you're becoming.", deliverable:"GitHub portfolio live + 30-Day graduation document.", tools:["Claude.ai","GitHub"], badge:"💻 The Builder — 30-Day Foundation Complete", duration:60 },
-  45: { phase:"UCF Ready", day:45, week:13,title:"Mid-Point — 45 Days Strong",                      quote:QUOTES.day2,       mission:"Comprehensive review. Portfolio update. Mock interview with Claude. Identify your top 3 gaps. Share progress with your dad.", deliverable:"45-Day progress report + updated portfolio.", tools:["Claude.ai"], badge:"🎯 The Pioneer — 45-Day Milestone", duration:60 },
-  60: { phase:"UCF Ready", day:60, week:17,title:"60-DAY REVIEW — Launch Milestone",                quote:QUOTES.day5,       mission:"Full portfolio review. Mock interview with Claude. Update your 90-day plan. You have 30 days until UCF.", deliverable:"60-Day portfolio + Launch document.", tools:["Claude.ai"], badge:"🚀 The Launch — 60-Day Milestone", duration:60 },
-  90: { phase:"UCF Ready", day:90, week:25,title:"90-DAY GRADUATION — UCF READY",                   quote:QUOTES.day5,       mission:"You made it. Review your journey. Print your portfolio. Write a letter to your UCF freshman self. You are not starting from zero.", deliverable:"Complete portfolio + UCF Ready graduation document.", tools:["Claude.ai"], badge:"🎓 UCF Ready — 90-Day Graduation Complete", duration:60 },
+  45: { phase:"Goal Ready", day:45, week:13,title:"Mid-Point — 45 Days Strong",                      quote:QUOTES.day2,       mission:"Comprehensive review. Portfolio update. Mock interview with Claude. Identify your top 3 gaps. Share progress with your dad.", deliverable:"45-Day progress report + updated portfolio.", tools:["Claude.ai"], badge:"🎯 The Pioneer — 45-Day Milestone", duration:60 },
+  60: { phase:"Goal Ready", day:60, week:17,title:"60-DAY REVIEW — Launch Milestone",                quote:QUOTES.day5,       mission:"Full portfolio review. Mock interview with Claude. Update your 90-day plan. You have 30 days until your goal.", deliverable:"60-Day portfolio + Launch document.", tools:["Claude.ai"], badge:"🚀 The Launch — 60-Day Milestone", duration:60 },
+  90: { phase:"Goal Ready", day:90, week:25,title:"90-DAY GRADUATION — GOAL READY",                  quote:QUOTES.day5,       mission:"You made it. Review your journey. Print your portfolio. Write a letter to your freshman self. You are not starting from zero.", deliverable:"Complete portfolio + graduation document.", tools:["Claude.ai"], badge:"🎓 Goal Ready — 90-Day Graduation Complete", duration:60 },
 };
 
 function getCurriculum(d) {
   if (CURRICULUM[d]) return CURRICULUM[d];
-  const phase = d<=5?"SPARK":d<=30?"Foundation":d<=60?"Builder":"UCF Ready";
+  const phase = d<=5?"SPARK":d<=30?"Foundation":d<=60?"Builder":"Goal Ready";
   const qs = Object.values(QUOTES);
   return { phase, day:d, week:Math.ceil(d/7), title:`Day ${d} — ${phase} Session`, quote:qs[d%qs.length], mission:"Use Claude to explore one new concept, reinforce one skill, and document one insight in your portfolio.", deliverable:"Daily learning log entry.", tools:["Claude.ai"], badge:null, duration:60 };
 }
@@ -104,7 +104,7 @@ const ALL_BADGES = [
   {id:"builder",icon:"💻",name:"The Builder",     desc:"30-Day Foundation + GitHub",day:30},
   {id:"pioneer",icon:"🎯",name:"The Pioneer",     desc:"45-Day Milestone",          day:45},
   {id:"launch", icon:"🚀",name:"The Launch",      desc:"60-Day Milestone",          day:60},
-  {id:"ucf",    icon:"🎓",name:"UCF Ready",       desc:"90-Day Graduation",         day:90},
+  {id:"goal",   icon:"🎓",name:"Goal Ready",      desc:"90-Day Graduation",         day:90},
 ];
 
 const C = { bg:"#0A0E1A", card:"#0F1629", border:"#1E2D4A", accent:"#00D4FF", gold:"#FFB300", green:"#00FF88", plum:"#8B5CF6", text:"#E2E8F0", muted:"#64748B" };
@@ -147,10 +147,14 @@ export default function App() {
   const [userName, setUserName] = useState(() => localStorage.getItem("p_name") || "");
   const [nameInput, setNameInput] = useState("");
 
-  // ── screen seeds from localStorage — skips welcome if user has started ──
+  // ── screen seeds from localStorage — routes through discovery if passion not detected ──
   const [screen, setScreen] = useState(() => {
     const savedDay = +localStorage.getItem("pd") || 1;
-    return savedDay > 1 ? "dashboard" : "welcome";
+    const savedPassion = localStorage.getItem("p_passion");
+    const hasPassion = savedPassion && JSON.parse(savedPassion).domain;
+    if (savedDay > 1) return "dashboard";
+    if (!hasPassion && userName) return "discovery";
+    return "welcome";
   });
   const [day, setDay]                   = useState(() => +localStorage.getItem("pd")||1);
   const [badges, setBadges]             = useState(() => JSON.parse(localStorage.getItem("pb")||'["seed"]'));
@@ -173,6 +177,23 @@ export default function App() {
   const [resumeTab, setResumeTab]       = useState("friends");
   const [lastReflection, setLastReflection] = useState("");
   const endRef = useRef(null);
+
+  // ── Passion Discovery Engine state ──
+  const [discoveryMsgs, setDiscoveryMsgs] = useState([]);
+  const [discoveryInput, setDiscoveryInput] = useState("");
+  const [discoveryLoading, setDiscoveryLoading] = useState(false);
+  const [discoveryStep, setDiscoveryStep] = useState(0);
+
+  // ── p_passion detection object — goalLabel drives all dynamic goal references ──
+  const [passion, setPassion] = useState(() => {
+    const saved = localStorage.getItem("p_passion");
+    return saved ? JSON.parse(saved) : { goalLabel: "Your Goal", domain: null, confidence: 0 };
+  });
+  const goalLabel = passion.goalLabel || "Your Goal";
+
+  useEffect(() => {
+    localStorage.setItem("p_passion", JSON.stringify(passion));
+  }, [passion]);
 
   const cur = getCurriculum(day);
   const hasOut = !!OUTSIDE_PROJECTS[day];
@@ -203,6 +224,7 @@ export default function App() {
                 const name = nameInput.trim();
                 localStorage.setItem("p_name", name);
                 setUserName(name);
+                if (!passion.domain) { setScreen("discovery"); setTimeout(() => startDiscovery(), 100); }
               }
             }}
             placeholder="Your first name..."
@@ -219,6 +241,7 @@ export default function App() {
                 const name = nameInput.trim();
                 localStorage.setItem("p_name", name);
                 setUserName(name);
+                if (!passion.domain) { setScreen("discovery"); setTimeout(() => startDiscovery(), 100); }
               }
             }}
             disabled={!nameInput.trim()}
@@ -263,6 +286,83 @@ export default function App() {
     } catch { return "Stay focused — connection blip. What were you working through?"; }
   }
 
+  // ── PASSION DISCOVERY ENGINE ──────────────────────────────────
+  async function startDiscovery() {
+    setScreen("discovery");
+    setDiscoveryLoading(true);
+    try {
+      const r = await fetch("/api/discover", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ studentName: userName, answers: [], step: 0 }),
+      });
+      const d = await r.json();
+      if (d.text) {
+        setDiscoveryMsgs([{ role: "assistant", content: d.text }]);
+      }
+    } catch {
+      setDiscoveryMsgs([{ role: "assistant", content: `Hey ${userName}! I'm really excited to get to know you. Before we dive into learning, I want to understand what you're passionate about. So tell me — what's something you could talk about for hours without getting bored?` }]);
+    }
+    setDiscoveryLoading(false);
+  }
+
+  async function sendDiscovery() {
+    if (!discoveryInput.trim() || discoveryLoading) return;
+    const answer = discoveryInput.trim();
+    setDiscoveryInput("");
+    const newMsgs = [...discoveryMsgs, { role: "user", content: answer }];
+    setDiscoveryMsgs(newMsgs);
+    setDiscoveryLoading(true);
+
+    const nextStep = discoveryStep + 1;
+    const answers = [];
+    for (let i = 0; i < newMsgs.length; i += 2) {
+      if (newMsgs[i]?.role === "assistant" && newMsgs[i + 1]?.role === "user") {
+        answers.push({ question: newMsgs[i].content, answer: newMsgs[i + 1].content });
+      }
+    }
+
+    try {
+      if (nextStep >= 9) {
+        // Finalize — detect passion
+        const r = await fetch("/api/discover", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ studentName: userName, answers, step: nextStep }),
+        });
+        const d = await r.json();
+        if (d.type === "detection" && d.passion) {
+          const newPassion = { ...d.passion, confidence: d.passion.confidence || 80 };
+          setPassion(newPassion);
+          localStorage.setItem("p_passion", JSON.stringify(newPassion));
+          setDiscoveryMsgs(p => [...p, { role: "assistant", content: `🎯 I see it clearly — you're passionate about **${newPassion.domain}**, specifically **${newPassion.subDomain}**. Your goal: **${newPassion.goalLabel}**. \n\nYour own words say it best: "${newPassion.motivationAnchor}"\n\nThis is going to shape your entire 90-day journey. Every lesson, every project — built around what YOU care about. Ready to start?` }]);
+          setDiscoveryStep(nextStep);
+          setDiscoveryLoading(false);
+          return;
+        }
+      }
+
+      // Normal adaptive question
+      const r = await fetch("/api/discover", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ studentName: userName, answers, step: nextStep }),
+      });
+      const d = await r.json();
+      if (d.text) {
+        setDiscoveryMsgs(p => [...p, { role: "assistant", content: d.text }]);
+      }
+    } catch {
+      setDiscoveryMsgs(p => [...p, { role: "assistant", content: "Tell me more about that — what specifically about it excites you the most?" }]);
+    }
+    setDiscoveryStep(nextStep);
+    setDiscoveryLoading(false);
+  }
+
+  function finishDiscovery() {
+    setScreen("welcome");
+  }
+
   async function startSession() {
     setScreen("session"); setPhase("chat"); setMsgs([]); setReflection(""); setAffirmation(""); setOutText(""); setOutEval(""); setLoading(true);
     const ctx = await getCipherContext(cur.title);
@@ -304,6 +404,24 @@ Open with energy. Reference their day and streak. End with a specific first chal
     if(!input.trim()||loading) return;
     const u = input.trim(); setInput("");
     const nm = [...msgs,{role:"user",content:u}]; setMsgs(nm); setLoading(true);
+
+    // ── CONTENT MODERATION PRE-CHECK ──
+    try {
+      const modRes = await fetch("/api/moderate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: u, studentName: userName }),
+      });
+      const modData = await modRes.json();
+      if (modData.flag) {
+        setMsgs(p=>[...p,{role:"assistant",content:"I'm Cipher — I'm here to help you learn about cybersecurity and AI through your passion. That kind of request is outside what I can help with. Let's get back to today's lesson! What would you like to explore about " + cur.title + "?"}]);
+        setLoading(false);
+        return;
+      }
+    } catch {
+      // Moderation check failed — proceed with Cipher (fail open for UX)
+    }
+
     const ctx = await getCipherContext(cur.title);
     const sys = `${ctx}You are Cipher, an AI learning coach on The Force Multiplier platform developed by WinterHaven.AI. You work exclusively with students to teach cybersecurity and AI literacy.
 
@@ -340,7 +458,7 @@ Direct, technical, encouraging. Max 4 sentences unless detail is requested.`;
     const sys = `You are Cipher — ${userName}'s mentor. They answered their Day ${day} closing reflection: "${cur.title}".
 Their answer: "${reflection}"
 Proven skills for today: ${ds.join(", ")}
-Respond: (1) specifically validate what they got RIGHT — quote their exact words back, (2) add one key insight they can build on, (3) name each skill they have NOW PROVEN specifically, (4) end with a powerful 1-sentence confidence statement about UCF.
+Respond: (1) specifically validate what they got RIGHT — quote their exact words back, (2) add one key insight they can build on, (3) name each skill they have NOW PROVEN specifically, (4) end with a powerful 1-sentence confidence statement about reaching their goal.
 6-8 sentences. Make them feel the weight of this.`;
     const t = await cipher(sys,[{role:"user",content:reflection}]);
     setAffirmation(t); setPhase("affirm");
@@ -382,6 +500,58 @@ Respond: (1) specifically validate what they got RIGHT — quote their exact wor
     if(tInput.trim()) setTestimonials(p=>[...p,{quote:tInput.trim(),day:day-1,badge:pendingBadge?.name||null,date:new Date().toLocaleDateString()}]);
     setTInput(""); setShowTModal(false); setPendingBadge(null);
   }
+
+  if(screen==="discovery") return (
+    <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",alignItems:"center",padding:24}}>
+      <style>{css}</style>
+      <div style={{maxWidth:500,width:"100%",paddingTop:40}}>
+        <div style={{fontSize:11,color:C.accent,letterSpacing:3,textTransform:"uppercase",marginBottom:8,textAlign:"center"}}>Passion Discovery</div>
+        <div style={{fontSize:24,fontWeight:900,textAlign:"center",marginBottom:6}}>Let's find your spark, {userName}</div>
+        <div style={{fontSize:13,color:C.muted,textAlign:"center",marginBottom:24}}>Question {Math.min(discoveryStep + 1, 10)} of ~10</div>
+
+        <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:16,padding:20,marginBottom:16,maxHeight:"50vh",overflowY:"auto"}}>
+          {discoveryMsgs.map((m,i) => (
+            <div key={i} className="si" style={{marginBottom:12,textAlign:m.role==="user"?"right":"left"}}>
+              <div style={{
+                display:"inline-block",maxWidth:"85%",padding:"10px 14px",borderRadius:12,
+                background:m.role==="user"?C.accent:C.card,
+                color:m.role==="user"?"#000":C.text,
+                border:m.role==="user"?"none":`1px solid ${C.border}`,
+                fontSize:14,lineHeight:1.5,
+              }}>{m.content}</div>
+            </div>
+          ))}
+          {discoveryLoading && <div className="pu" style={{fontSize:13,color:C.muted}}>Thinking...</div>}
+        </div>
+
+        {passion.domain ? (
+          <button onClick={finishDiscovery} className="gl" style={{width:"100%",background:`linear-gradient(135deg,${C.gold},${C.accent})`,color:"#000",padding:"15px",borderRadius:13,fontSize:16,fontWeight:900}}>
+            LET'S GO — Start My Journey →
+          </button>
+        ) : (
+          <div style={{display:"flex",gap:8}}>
+            <input
+              value={discoveryInput}
+              onChange={e=>setDiscoveryInput(e.target.value)}
+              onKeyDown={e=>{ if(e.key==="Enter") sendDiscovery(); }}
+              placeholder="Type your answer..."
+              disabled={discoveryLoading}
+              autoFocus
+              style={{flex:1,background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:"14px 16px",color:C.text,fontSize:14}}
+            />
+            <button
+              onClick={sendDiscovery}
+              disabled={!discoveryInput.trim()||discoveryLoading}
+              className="gl"
+              style={{background:discoveryInput.trim()?C.accent:C.border,color:"#000",padding:"14px 20px",borderRadius:12,fontWeight:700,fontSize:14}}
+            >→</button>
+          </div>
+        )}
+
+        <div style={{fontSize:10,color:C.muted,textAlign:"center",marginTop:12}}>Your answers shape your entire 90-day journey</div>
+      </div>
+    </div>
+  );
 
   if(screen==="welcome")   return <Welcome name={userName} onStart={()=>setScreen("dashboard")} />;
   if(screen==="badges")    return <Badges  badges={badges} testimonials={testimonials} onBack={()=>setScreen("dashboard")} />;
@@ -442,8 +612,8 @@ Respond: (1) specifically validate what they got RIGHT — quote their exact wor
           </div>
           <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}>
             <span style={{fontSize:10,color:C.muted}}>Start</span>
-            <span style={{fontSize:10,color:C.accent,fontWeight:600}}>{prog}% to UCF</span>
-            <span style={{fontSize:10,color:C.muted}}>Day 1 at UCF</span>
+            <span style={{fontSize:10,color:C.accent,fontWeight:600}}>{prog}% to {goalLabel}</span>
+            <span style={{fontSize:10,color:C.muted}}>Day 1 at {goalLabel}</span>
           </div>
         </div>
 
@@ -660,7 +830,7 @@ function Resume({skills,badges,outside,day,streak,name,tab,setTab,onBack}) {
       {tab==="friends"&&(
         <div>
           <Block title="What I'm Doing" color={C.accent}>
-            <div style={{fontSize:13,color:C.text,lineHeight:1.7}}>I'm on Day {day} of a 90-day cybersecurity accelerator my dad built for me before UCF. 1 hour every day with an AI mentor called Cipher. I'm learning to hack (legally), write security code, and I've already completed real cybersecurity challenges on TryHackMe.</div>
+            <div style={{fontSize:13,color:C.text,lineHeight:1.7}}>I'm on Day {day} of a 90-day cybersecurity accelerator my dad built for me before {goalLabel}. 1 hour every day with an AI mentor called Cipher. I'm learning to hack (legally), write security code, and I've already completed real cybersecurity challenges on TryHackMe.</div>
           </Block>
           {earnedBadges.length>0&&<Block title={`Badges Earned (${earnedBadges.length})`} color={C.gold}>
             <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:8}}>{earnedBadges.map(b=><span key={b.id} style={{fontSize:24}}>{b.icon}</span>)}</div>
@@ -676,7 +846,7 @@ function Resume({skills,badges,outside,day,streak,name,tab,setTab,onBack}) {
       {tab==="family"&&(
         <div>
           <Block title={`What ${name} Is Doing`} color={C.gold}>
-            <div style={{fontSize:13,color:C.text,lineHeight:1.7}}>{name} is completing a 90-day cybersecurity accelerator — 1 hour every single day — to prepare for UCF. They work with an AI mentor learning the same skills that professional cybersecurity analysts use. They don't just read about it — they build things and prove their skills in real challenges online.</div>
+            <div style={{fontSize:13,color:C.text,lineHeight:1.7}}>{name} is completing a 90-day cybersecurity accelerator — 1 hour every single day — to prepare for {goalLabel}. They work with an AI mentor learning the same skills that professional cybersecurity analysts use. They don't just read about it — they build things and prove their skills in real challenges online.</div>
           </Block>
           <Block title="In Plain English" color={C.green}>
             {skills.slice(0,6).map((s,i)=><div key={i} style={{fontSize:13,color:C.text,marginBottom:5}}>✅ {s.skill}</div>)}
@@ -686,7 +856,7 @@ function Resume({skills,badges,outside,day,streak,name,tab,setTab,onBack}) {
             <div style={{fontSize:13,color:C.text,lineHeight:1.7}}>{name} has completed {outsideDone.length} real-world project{outsideDone.length>1?"s":""} outside the app and brought back documented proof — including live cybersecurity challenges on the same platforms used by professional security analysts.</div>
           </Block>}
           <div style={{background:`rgba(139,92,246,0.08)`,border:`1px solid rgba(139,92,246,0.25)`,borderRadius:11,padding:"12px 14px",marginBottom:12}}>
-            <div style={{fontSize:12,color:C.text,lineHeight:1.7,fontStyle:"italic"}}>"{name} has spent {day} hours studying cybersecurity the same way professionals do — building real things and solving real problems. They enter UCF already thinking like a security professional."</div>
+            <div style={{fontSize:12,color:C.text,lineHeight:1.7,fontStyle:"italic"}}>"{name} has spent {day} hours studying cybersecurity the same way professionals do — building real things and solving real problems. They enter {goalLabel} already thinking like a security professional."</div>
             <div style={{fontSize:10,color:C.muted,marginTop:6}}>— Cipher AI, Day {day} Assessment</div>
           </div>
         </div>
@@ -773,10 +943,10 @@ function Welcome({name, onStart}) {
         <div style={{fontSize:11,color:C.accent,letterSpacing:3,textTransform:"uppercase",marginBottom:7}}>A Gift From Lane</div>
         <div style={{fontSize:38,fontWeight:900,lineHeight:1.1,marginBottom:7}}>{name}'s<br /><span style={{color:C.accent}}>Accelerator</span></div>
         <div style={{fontSize:14,color:C.muted,marginBottom:5}}>90 Days. 1 Hour Per Day.</div>
-        <div style={{fontSize:12,color:C.muted,marginBottom:28,fontStyle:"italic"}}>UCF Cybersecurity — Freshman Year</div>
+        <div style={{fontSize:12,color:C.muted,marginBottom:28,fontStyle:"italic"}}>{goalLabel} — Freshman Year</div>
         <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:13,padding:18,marginBottom:20,textAlign:"left"}}>
           <div style={{fontSize:11,fontWeight:600,color:C.gold,marginBottom:9}}>🎯 What You'll Walk Away With</div>
-          {["90+ confirmed skills in your portfolio","Real-world CTF and GitHub projects","10 milestone badges earned through proof","A living resume for friends, family, and professors","A 90-day head start on every UCF classmate"].map((item,i)=>(
+          {["90+ confirmed skills in your portfolio","Real-world CTF and GitHub projects","10 milestone badges earned through proof","A living resume for friends, family, and professors",`A 90-day head start on every classmate`].map((item,i)=>(
             <div key={i} style={{fontSize:13,color:C.text,marginBottom:5,display:"flex",gap:8}}><span style={{color:C.green}}>✓</span>{item}</div>
           ))}
         </div>
