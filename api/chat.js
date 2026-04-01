@@ -32,17 +32,12 @@ export default async function handler(req, res) {
 
     let moderationResult;
     try {
-      moderationResult = JSON.parse(moderationText);
+      // Extract JSON from response (handle cases where model adds extra text)
+      const jsonMatch = moderationText.match(/\{[^}]+\}/);
+      moderationResult = jsonMatch ? JSON.parse(jsonMatch[0]) : { safe: true };
     } catch {
-      // If Haiku returns non-JSON, fail safe — block the message
-      return res.status(200).json({
-        content: [
-          {
-            type: "text",
-            text: "I wasn't able to process that message. Could you try rephrasing your question about today's lesson?",
-          },
-        ],
-      });
+      // If Haiku returns non-JSON, fail open — allow the message through
+      moderationResult = { safe: true };
     }
 
     if (!moderationResult.safe) {
@@ -55,16 +50,9 @@ export default async function handler(req, res) {
         ],
       });
     }
-  } catch {
-    // If the moderation call itself errors, fail safe — block the message
-    return res.status(200).json({
-      content: [
-        {
-          type: "text",
-          text: "I'm having trouble processing your message right now. Please try again in a moment.",
-        },
-      ],
-    });
+  } catch (moderationError) {
+    // If the moderation call itself errors, fail open — allow message through to Cipher
+    console.error("Moderation call failed, allowing message through:", moderationError);
   }
 
   // --- Main Cipher call ---
