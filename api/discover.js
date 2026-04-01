@@ -65,6 +65,24 @@ This is question ${step + 1} of about 10.`;
     });
 
     const data = await response.json();
+
+    // If API returned an error, log it and use fallback
+    if (data.error) {
+      console.error("Discover API error:", JSON.stringify(data.error));
+      if (isFinalization) {
+        return res.status(200).json({ type: "detection", passion: {
+          goalLabel: "Your Goal", domain: "General", subDomain: "Exploration",
+          motivationAnchor: "Discovering what matters most", confidence: 30,
+        }});
+      }
+      const fallbackQuestions = [
+        `Hey ${studentName}! I'm excited to get to know you. What's something you could talk about for hours without getting bored?`,
+        "That's awesome! What specifically about that excites you the most?",
+        "I love that. If you could spend a whole day doing anything related to that, what would it look like?",
+      ];
+      return res.status(200).json({ type: "question", text: fallbackQuestions[Math.min(step, fallbackQuestions.length - 1)] });
+    }
+
     const text = data.content?.[0]?.text || "";
 
     if (isFinalization) {
@@ -86,7 +104,7 @@ This is question ${step + 1} of about 10.`;
       }});
     }
 
-    return res.status(200).json({ type: "question", text });
+    return res.status(200).json({ type: "question", text: text || `Hey ${studentName}! What's something you're really passionate about — something you could talk about for hours?` });
   } catch (error) {
     return res.status(500).json({ error: "API error", details: error.message });
   }
