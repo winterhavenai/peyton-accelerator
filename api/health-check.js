@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import cipherContext from "../src/cipherContext.json" assert { type: "json" };
+import cipherContext from "../src/cipherContext.json" with { type: "json" };
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const ALERT_EMAIL = "thefootersedge@gmail.com";
