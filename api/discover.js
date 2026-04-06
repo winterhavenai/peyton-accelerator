@@ -1,4 +1,27 @@
+import { Redis } from "@upstash/redis";
+
+const redis = new Redis({
+  url: process.env.KV_REST_API_URL,
+  token: process.env.KV_REST_API_TOKEN,
+});
+
 export default async function handler(req, res) {
+  // GET: retrieve discovery transcript
+  if (req.method === "GET") {
+    const { name } = req.query;
+    if (!name) return res.status(400).json({ error: "Missing name" });
+    try {
+      const key = `transcript:discovery:${name.toLowerCase()}`;
+      const raw = await redis.get(key);
+      if (!raw) return res.status(200).json({ transcript: null });
+      const transcript = typeof raw === "string" ? JSON.parse(raw) : raw;
+      return res.status(200).json({ transcript });
+    } catch (error) {
+      console.error("Discovery transcript GET error:", error);
+      return res.status(500).json({ error: "Failed to load transcript" });
+    }
+  }
+
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
   const { studentName, answers, step } = req.body;
@@ -91,6 +114,19 @@ This is question ${step + 1} of about 10.`;
         const jsonMatch = text.match(/\{[\s\S]*\}/);
         const passion = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
         if (passion && passion.domain) {
+          // Persist the full discovery transcript to Redis
+          try {
+            const transcriptKey = `transcript:discovery:${studentName.toLowerCase()}`;
+            const transcript = {
+              studentName,
+              answers,
+              passion,
+              completedAt: new Date().toISOString(),
+            };
+            await redis.set(transcriptKey, JSON.stringify(transcript));
+          } catch (saveErr) {
+            console.error("Failed to save discovery transcript:", saveErr);
+          }
           return res.status(200).json({ type: "detection", passion });
         }
       } catch {}

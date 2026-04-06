@@ -2,8 +2,8 @@ import { Redis } from "@upstash/redis";
 import { Resend } from "resend";
 
 const redis = new Redis({
-    url: process.env.STORAGE_KV_REST_API_URL,
-    token: process.env.STORAGE_KV_REST_API_TOKEN,
+    url: process.env.KV_REST_API_URL,
+    token: process.env.KV_REST_API_TOKEN,
 });
 
 const resend = new Resend(process.env.RESEND_API_KEY);
