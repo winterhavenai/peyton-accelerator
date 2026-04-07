@@ -142,7 +142,162 @@ async function logCompletion({ name, day, streak, skills, reflection }) {
   }
 }
 
+// ── Parent/Educator Progress View (read-only, no login) ──
+function ProgressView({ studentName }) {
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`/api/progress?name=${encodeURIComponent(studentName)}`)
+      .then(r => r.json())
+      .then(d => { if (d.error) throw new Error(d.error); setData(d); })
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false));
+  }, [studentName]);
+
+  if (loading) return (
+    <div style={{minHeight:"100vh",background:C.bg,display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <div style={{textAlign:"center"}}>
+        <div style={{fontSize:36,marginBottom:12}}>📊</div>
+        <div style={{fontSize:16,fontWeight:600,color:C.text}}>Loading progress...</div>
+      </div>
+    </div>
+  );
+
+  if (error || !data) return (
+    <div style={{minHeight:"100vh",background:C.bg,display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <div style={{textAlign:"center",maxWidth:400,padding:20}}>
+        <div style={{fontSize:36,marginBottom:12}}>🔍</div>
+        <div style={{fontSize:16,fontWeight:600,color:C.text,marginBottom:8}}>No progress found</div>
+        <div style={{fontSize:13,color:C.muted}}>No data found for "{studentName}". The student may not have started yet, or the name may be different.</div>
+      </div>
+    </div>
+  );
+
+  const prog = Math.round(((data.currentDay - 1) / 90) * 100);
+  const completions = data.completions || [];
+
+  return (
+    <div style={{minHeight:"100vh",background:C.bg,paddingBottom:40}}>
+      <style>{css}</style>
+
+      {/* HEADER */}
+      <div style={{background:C.card,borderBottom:`1px solid ${C.border}`,padding:"16px 18px"}}>
+        <div style={{fontSize:9,color:C.accent,letterSpacing:2,textTransform:"uppercase",fontWeight:600,marginBottom:4}}>WinterHaven.AI — Progress Report</div>
+        <div style={{fontSize:20,fontWeight:900,color:C.text}}>{data.name}'s Journey</div>
+        {data.passion && <div style={{fontSize:13,color:C.muted,marginTop:2}}>Passion: <span style={{color:C.accent,fontWeight:600}}>{data.passion.domain}</span> — {data.passion.subDomain}</div>}
+      </div>
+
+      <div style={{maxWidth:520,margin:"0 auto",padding:"0 16px"}}>
+
+        {/* OVERVIEW CARDS */}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginTop:18}}>
+          <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:"14px 12px",textAlign:"center"}}>
+            <div style={{fontSize:28,fontWeight:900,color:C.accent}}>{data.currentDay}</div>
+            <div style={{fontSize:10,color:C.muted,marginTop:2}}>Current Day</div>
+          </div>
+          <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:"14px 12px",textAlign:"center"}}>
+            <div style={{fontSize:28,fontWeight:900,color:C.green}}>{data.daysCompleted}</div>
+            <div style={{fontSize:10,color:C.muted,marginTop:2}}>Days Done</div>
+          </div>
+          <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:"14px 12px",textAlign:"center"}}>
+            <div style={{fontSize:28,fontWeight:900,color:C.gold}}>{data.streak}</div>
+            <div style={{fontSize:10,color:C.muted,marginTop:2}}>Day Streak</div>
+          </div>
+        </div>
+
+        {/* PROGRESS BAR */}
+        <div style={{marginTop:18}}>
+          <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
+            <span style={{fontSize:11,color:C.muted}}>90-Day Progress</span>
+            <span style={{fontSize:11,color:C.accent,fontWeight:600}}>{prog}%{data.passion ? ` to ${data.passion.goalLabel}` : ""}</span>
+          </div>
+          <div style={{background:C.border,borderRadius:99,height:8,overflow:"hidden"}}>
+            <div style={{height:"100%",width:`${prog}%`,background:`linear-gradient(90deg,${C.accent},${C.plum})`,borderRadius:99,transition:"width 0.5s"}} />
+          </div>
+        </div>
+
+        {/* GOAL */}
+        {data.passion && (
+          <div style={{background:"rgba(139,92,246,0.08)",border:`1px solid rgba(139,92,246,0.25)`,borderRadius:12,padding:"14px 16px",marginTop:18}}>
+            <div style={{fontSize:9,color:C.plum,letterSpacing:2,textTransform:"uppercase",fontWeight:600,marginBottom:6}}>Goal</div>
+            <div style={{fontSize:18,fontWeight:800,color:C.text}}>{data.passion.goalLabel}</div>
+            <div style={{fontSize:12,color:C.muted,marginTop:4}}>{data.passion.domain} — {data.passion.subDomain}</div>
+          </div>
+        )}
+
+        {/* SKILLS */}
+        {data.skills.length > 0 && (
+          <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:"14px 16px",marginTop:14}}>
+            <div style={{fontSize:9,color:C.green,letterSpacing:2,textTransform:"uppercase",fontWeight:600,marginBottom:10}}>Skills Confirmed ({data.skills.length})</div>
+            {data.skills.map((s, i) => (
+              <div key={i} style={{fontSize:12,color:C.text,padding:"5px 0",borderBottom:i < data.skills.length - 1 ? `1px solid ${C.border}` : "none",display:"flex",alignItems:"center",gap:8}}>
+                <span style={{color:C.green,fontSize:10}}>✓</span>
+                <span>{typeof s === "string" ? s : s.skill || s}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* DAY-BY-DAY COMPLETIONS */}
+        {completions.length > 0 && (
+          <div style={{marginTop:14}}>
+            <div style={{fontSize:9,color:C.accent,letterSpacing:2,textTransform:"uppercase",fontWeight:600,marginBottom:10}}>Session History</div>
+            {completions.map((c, i) => {
+              const date = c.timestamp ? new Date(c.timestamp).toLocaleDateString("en-US", { month:"short", day:"numeric" }) : "";
+              const dayData = CURRICULUM[c.day] || {};
+              return (
+                <div key={i} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:10,padding:"12px 14px",marginBottom:8}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+                    <div style={{fontSize:14,fontWeight:700,color:C.accent}}>Day {c.day}</div>
+                    <div style={{fontSize:11,color:C.muted}}>{date}</div>
+                  </div>
+                  {dayData.title && <div style={{fontSize:12,color:C.text,fontWeight:600,marginBottom:4}}>{dayData.title}</div>}
+                  {c.reflection && (
+                    <div style={{fontSize:12,color:C.muted,fontStyle:"italic",marginTop:4,lineHeight:1.5}}>"{c.reflection}"</div>
+                  )}
+                  {c.skills && c.skills.length > 0 && (
+                    <div style={{marginTop:6,display:"flex",flexWrap:"wrap",gap:4}}>
+                      {c.skills.map((s, j) => (
+                        <span key={j} style={{fontSize:10,color:C.green,background:"rgba(0,255,136,0.08)",padding:"2px 8px",borderRadius:99}}>{s}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* DAY SUMMARIES FROM MEMORY */}
+        {Object.keys(data.daysSummary || {}).length > 0 && (
+          <div style={{marginTop:14}}>
+            <div style={{fontSize:9,color:C.gold,letterSpacing:2,textTransform:"uppercase",fontWeight:600,marginBottom:10}}>Cipher's Notes</div>
+            {Object.entries(data.daysSummary).sort(([a],[b]) => Number(a.replace(/\D/g,"")) - Number(b.replace(/\D/g,""))).map(([key, summary], i) => (
+              <div key={i} style={{background:"rgba(255,179,0,0.05)",border:`1px solid rgba(255,179,0,0.15)`,borderRadius:8,padding:"10px 12px",marginBottom:6}}>
+                <div style={{fontSize:11,fontWeight:600,color:C.gold,marginBottom:3}}>{key}</div>
+                <div style={{fontSize:12,color:C.text,lineHeight:1.6}}>{typeof summary === "string" ? summary : JSON.stringify(summary)}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* FOOTER */}
+        <div style={{textAlign:"center",marginTop:28,padding:"16px 0"}}>
+          <div style={{fontSize:10,color:C.muted}}>The Force Multiplier — Passion-Powered Learning</div>
+          <div style={{fontSize:10,color:C.muted,marginTop:4}}>WinterHaven.AI</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
+  // ── Progress view: ?progress=name renders read-only parent/educator view ──
+  const progressParam = new URLSearchParams(window.location.search).get("progress");
+  if (progressParam) return <ProgressView studentName={progressParam} />;
+
   // ── Name capture — shown once before anything else ──
   const [userName, setUserName] = useState(() => localStorage.getItem("p_name") || "");
   const [nameInput, setNameInput] = useState("");
