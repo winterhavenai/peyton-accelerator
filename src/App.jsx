@@ -796,7 +796,7 @@ Respond: (1) specifically validate what they got RIGHT — quote their exact wor
     </div>
   );
 
-  if(screen==="welcome")   return <Welcome name={userName} onStart={()=>setScreen("dashboard")} />;
+  if(screen==="welcome")   return <Welcome name={userName} goalLabel={goalLabel} onStart={()=>setScreen("dashboard")} />;
   if(screen==="badges")    return <Badges  badges={badges} testimonials={testimonials} onBack={()=>setScreen("dashboard")} />;
   if(screen==="portfolio") return <Portfolio skills={skills} outside={outside} day={day} onBack={()=>setScreen("dashboard")} />;
   if(screen==="resume")    return <Resume  skills={skills} badges={badges} outside={outside} day={day} streak={streak} name={userName} tab={resumeTab} setTab={setResumeTab} onBack={()=>setScreen("dashboard")} />;
@@ -1178,7 +1178,7 @@ function Badges({badges,testimonials,onBack}) {
 }
 
 // ---- WELCOME ----
-function Welcome({name, onStart}) {
+function Welcome({name, goalLabel, onStart}) {
   return (
     <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:24}}>
       <style>{css}</style>
