@@ -1,9 +1,43 @@
 import { Redis } from "@upstash/redis";
+import { Resend } from "resend";
 
 const redis = new Redis({
   url: process.env.KV_REST_API_URL,
   token: process.env.KV_REST_API_TOKEN,
 });
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+const PASSION_EMAIL = "thefootersedge@gmail.com";
+
+async function sendPassionEmail({ studentName, passion, answers }) {
+  const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+  const qaHtml = (answers || []).map((a, i) =>
+    `<div style="margin-bottom:14px;padding:12px;background:#0F1629;border:1px solid #1E2D4A;border-radius:8px;"><div style="font-size:12px;color:#00D4FF;font-weight:600;margin-bottom:6px;">Q${i+1}: ${esc(a.question)}</div><div style="font-size:13px;color:#E2E8F0;">${esc(a.answer)}</div></div>`
+  ).join("");
+  const html = `<div style="font-family:'Inter',sans-serif;max-width:640px;margin:0 auto;background:#0A0E1A;color:#E2E8F0;padding:32px;border-radius:12px;">
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="font-size:11px;color:#00D4FF;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;">WinterHaven.AI</div>
+      <h1 style="font-size:22px;font-weight:900;margin:0;color:#ffffff;">Passion Discovery Complete</h1>
+      <div style="font-size:14px;color:#FFB300;margin-top:8px;font-weight:700;">${esc(studentName)}</div>
+    </div>
+    <div style="background:#0F1629;border:1px solid #FFB300;border-radius:10px;padding:18px;margin-bottom:20px;">
+      <div style="font-size:11px;color:#FFB300;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">Detected Passion</div>
+      <div style="font-size:20px;font-weight:900;color:#ffffff;margin-bottom:4px;">${esc(passion.goalLabel)}</div>
+      <div style="font-size:13px;color:#E2E8F0;">${esc(passion.domain)} &middot; ${esc(passion.subDomain)}</div>
+      <div style="font-size:12px;color:#64748B;margin-top:6px;">Confidence: ${esc(passion.confidence)}%</div>
+      ${passion.motivationAnchor ? `<div style="margin-top:12px;padding:10px;background:rgba(255,179,0,0.05);border-left:3px solid #FFB300;font-size:13px;font-style:italic;color:#E2E8F0;">"${esc(passion.motivationAnchor)}"</div>` : ""}
+    </div>
+    <div style="font-size:12px;color:#64748B;text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;">Full Transcript (${(answers||[]).length} questions)</div>
+    ${qaHtml}
+    <div style="text-align:center;margin-top:24px;font-size:11px;color:#64748B;">WinterHaven.AI &middot; Passion-Powered Learning</div>
+  </div>`;
+  await resend.emails.send({
+    from: "onboarding@resend.dev",
+    to: PASSION_EMAIL,
+    subject: `WinterHaven.AI - Passion Discovered: ${studentName} -> ${passion.goalLabel}`,
+    html,
+  });
+}
 
 export default async function handler(req, res) {
   // GET: retrieve discovery transcript
@@ -127,6 +161,11 @@ This is question ${step + 1} of about 10.`;
             await redis.set(transcriptKey, JSON.stringify(transcript));
           } catch (saveErr) {
             console.error("Failed to save discovery transcript:", saveErr);
+          }
+          try {
+            await sendPassionEmail({ studentName, passion, answers });
+          } catch (emailErr) {
+            console.error("Failed to send passion discovery email:", emailErr);
           }
           return res.status(200).json({ type: "detection", passion });
         }
