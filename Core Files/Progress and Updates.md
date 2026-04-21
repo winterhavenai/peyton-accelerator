@@ -1,6 +1,6 @@
 # The Force Multiplier — Progress and Updates
 
-## Last Updated: April 14, 2026
+## Last Updated: April 15, 2026
 
 ### Current Status
 - Platform live at theforcemultiplier.ai (redeployed 2026-04-14 dpl_2zt9hMLvQCvwQ4oFfgfcxUanprkp)
@@ -11,6 +11,18 @@
 - Content moderation hotfixed (fail-open) — Wyatt unblocked
 - Passion Discovery API error handling added — no more empty question boxes
 - OPEN ISSUE: Karen reported "Cipher repeating at bottom" during daily session on iPad — awaiting clearer screenshot + repro steps
+- OPEN ISSUE [2026-04-15]: Lane's Run 2 — Day 1 plan = cybersecurity (not his input), no passion-discovery email received
+- OPEN QUESTION [2026-04-15]: Lane expects passion to DRIVE curriculum content; current design uses passion as Cipher framing LENS over fixed cybersecurity/AI curriculum — product decision needed
+
+### April 15, 2026 — Session Work (Diagnostic only, no code changes)
+- [2026-04-15] Lane forwarded TFM Run 2 feedback: Run 2 "excellent" but (a) Day 1 plan came back as cybersecurity not his passion input, (b) no passion-discovery email arrived.
+- [2026-04-15] Diagnosed Day 1 mismatch: NOT a bug. `src/App.jsx:21-38` (DAY_SKILLS) and `:65-71+` (daily plan objects) are hardcoded cybersecurity content. Product thesis is Cipher teaches AI literacy + cybersecurity USING passion as lens/framing — passion doesn't replace subject matter. Lane raised same question 2026-04-14; Run 2 feedback is re-surfacing the enhancement request. Product call for Lane: (a) copy changes on Welcome clarifying the framing, or (b) dynamically generate passion-driven Day 1 content.
+- [2026-04-15] Diagnosed missing email — hypotheses (unverified, need Resend dashboard + Vercel logs):
+  1. `from: "onboarding@resend.dev"` in `api/discover.js:35` is Resend's SHARED SANDBOX sender — restricted to account-owner email only. If Resend account isn't owned by thefootersedge@gmail.com, sends silently reject.
+  2. Finalization (step >= 9) never triggered → `sendPassionEmail` never called.
+  3. Send threw inside try/catch → check Vercel function logs for `"Failed to send passion discovery email"`.
+- [2026-04-15] Recommended next steps: check Resend dashboard (resend.com/emails) for Run 2 send attempt, pull Vercel logs for discover.js around Run 2 timestamp, confirm Resend account owner email.
+- [2026-04-15] NO code changes made — diagnosis only, awaiting Lane's direction on product question and log evidence.
 
 ### April 14, 2026 — Session Work
 - [2026-04-14] Hotfix: Welcome-screen blank-render crash (Karen re: Brady). Welcome referenced `goalLabel` (defined only inside App()) → ReferenceError → blank. Fix: pass `goalLabel` as prop. Commit 10f468e. Deployed.

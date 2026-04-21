@@ -60,7 +60,12 @@ K-12 AI literacy platform featuring "Cipher" — an adaptive AI tutor (Claude-po
 - Error handling: API errors fall back to hardcoded discovery questions, never returns empty text
 - Possible issue: check Vercel function logs for /api/discover — empty boxes suggest API key or rate limit problems
 
+## Beta Families
+- **Karen & Wyatt** — active beta family. Wyatt on Day 10+. Karen requested parent visibility into progress.
+- Parent/educator progress view is Task 6 (HIGH priority) — required for Polk County pilot
+
 ## What's Waiting on Lane
 - Add HEALTH_CHECK_SECRET env var to Vercel
 - Add KV env vars to pappa-legacy Vercel project (for TheLegacy Redis backup)
 - Refresh NotebookLM auth if needed
+- Review grant pitch v4.5 rewrites
