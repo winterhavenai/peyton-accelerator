@@ -10,7 +10,7 @@ export default async function handler(req, res) {
           return res.status(405).json({ error: "Method not allowed" });
     }
     try {
-          const { name, day, streak, skills, reflection, timestamp } = req.body;
+          const { name, day, streak, skills, reflection, timestamp, competencyId, evidenceRequired, artifactDescriptor, lessonKey } = req.body;
           if (!name || !day) {
                   return res.status(400).json({ error: "Missing required fields" });
           }
@@ -23,6 +23,22 @@ export default async function handler(req, res) {
           };
           await redis.set(key, JSON.stringify(record));
           await redis.lpush("completion_index", key);
+
+          // Slice B: structured evidence stub (B upgrades status "covered" -> "demonstrated", no migration)
+          if (competencyId) {
+                  const studentKey = String(name).trim().toLowerCase();
+                  const evKey = `evidence:${studentKey}:${competencyId}:${day}`;
+                  await redis.set(evKey, JSON.stringify({
+                          competencyId, activeDay: day,
+                          lessonKey: lessonKey || null,            // Codex: include the versioned lessonKey when available
+                          evidenceRequired: evidenceRequired || null,
+                          studentReflection: reflection || null,
+                          artifactDescriptor: artifactDescriptor || null,
+                          status: "covered",
+                          at: new Date().toISOString(),
+                  }));
+          }
+
           return res.status(200).json({ success: true });
     } catch (error) {
           console.error("Log error:", error);
