@@ -48,7 +48,12 @@ export default async function handler(req, res) {
 
   // forceRegenerate is an ADMIN-ONLY override (auth via review secret). Client/student calls never set it.
   const { studentName, activeDay, passion, performanceContext } = req.body || {};
-  const forceRegenerate = req.body?.forceRegenerate === true && req.headers["x-review-secret"] === process.env.CURRICULUM_REVIEW_SECRET;
+  // Auth hardening (Codex): require the secret to be CONFIGURED, else an unset env makes
+  // `undefined === undefined` true and a client with no header could force-regenerate.
+  const reviewSecret = process.env.CURRICULUM_REVIEW_SECRET;
+  const forceRegenerate = !!reviewSecret
+    && req.body?.forceRegenerate === true
+    && req.headers["x-review-secret"] === reviewSecret;
   if (!studentName || !activeDay) return res.status(400).json({ error: "Missing studentName or activeDay" });
 
   const slot = getArcSlot(Number(activeDay));
@@ -62,9 +67,15 @@ export default async function handler(req, res) {
 
   // CACHE READ FIRST (Codex fix #1): never regenerate over an existing lesson — that would clobber
   // an approved lesson and re-pend it, breaking the review gate. Return what's there unless an admin forces.
+  // EXCEPTION (Codex blocker #2): a REJECTED lesson is NOT served to students — it self-heals by
+  // regenerating a fresh pending replacement (which re-enters Lane's queue). Admins can still force.
   if (!forceRegenerate) {
     const existing = await redis.get(key);
-    if (existing) return res.status(200).json(typeof existing === "string" ? JSON.parse(existing) : existing);
+    if (existing) {
+      const ex = typeof existing === "string" ? JSON.parse(existing) : existing;
+      if (ex.reviewStatus !== "rejected") return res.status(200).json(ex);
+      // rejected -> fall through and regenerate a new pending lesson for review.
+    }
   }
 
   // Provenance + governance fields shared by both the generated and fallback paths.

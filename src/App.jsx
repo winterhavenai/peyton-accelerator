@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { getArcSlot, getCompetency, SPINE_VERSION, PROMPT_VERSION } from "./curriculum/spine.js";
 
 // Rollback kill-switch: set to false to revert Day 1 entirely to the hardcoded curriculum.
 const USE_GENERATED_DAY1 = true;
@@ -430,7 +429,20 @@ export default function App() {
     return () => { cancelled = true; };
   }, [day, userName, passion]);
 
-  const cur = (day === 1 && genDay1) ? { ...getCurriculum(1), ...genDay1 } : getCurriculum(day);
+  // Day 1 with the generated path on: show the generated lesson once ready, otherwise a NEUTRAL
+  // "personalizing" card — never the hardcoded cyber Day 1 while loading/pending/failed (Codex blocker #1).
+  let cur;
+  if (day === 1 && USE_GENERATED_DAY1) {
+    cur = genDay1
+      ? { ...getCurriculum(1), ...genDay1 }
+      : { ...getCurriculum(1),
+          title: "Personalizing your Day 1…",
+          mission: "Your first lesson is being tailored to what you care about — it'll be ready in a moment. Check back shortly.",
+          deliverable: "Your personalized Day 1 lesson.",
+          tools: ["Cipher"] };
+  } else {
+    cur = getCurriculum(day);
+  }
   const hasOut = !!OUTSIDE_PROJECTS[day];
   const outDone = outside[day]?.submitted;
 
@@ -685,7 +697,9 @@ Only include fields that have NEW information from THIS conversation. Empty arra
   }
 
   async function startSession() {
-    if (day === 1 && USE_GENERATED_DAY1 && genDay1State === "pending") {
+    // Block starting Day 1 until a real generated/approved lesson exists — covers loading, pending,
+    // and fetch-failed (idle), so a session never starts on the neutral placeholder (Codex blocker #1).
+    if (day === 1 && USE_GENERATED_DAY1 && !genDay1) {
       setMsgs([{ role: "assistant", content: "Your Day 1 is being personalized to your passion right now — check back in a little bit and it'll be ready!" }]);
       setScreen("session"); setPhase("chat"); setLoading(false);
       return;
