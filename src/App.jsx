@@ -1,4 +1,8 @@
 import { useState, useEffect, useRef } from "react";
+import { getArcSlot, getCompetency, SPINE_VERSION, PROMPT_VERSION } from "./curriculum/spine.js";
+
+// Rollback kill-switch: set to false to revert Day 1 entirely to the hardcoded curriculum.
+const USE_GENERATED_DAY1 = true;
 
 const QUOTES = {
   day1: { text: "We like to think of our champions and idols as superheroes who were born different from us. We don't like to think of them as relatively ordinary people who made themselves extraordinary.", author: "Carol Dweck" },
@@ -127,6 +131,13 @@ function getLearningScope(passion) {
   };
 }
 
+// For a generated Day 1, the day's proven skills come from the lesson; otherwise the static table.
+function getDaySkills(day, cur, passion) {
+  if (day === 1 && cur && Array.isArray(cur.skills) && cur.skills.length) return cur.skills;
+  const scope = getLearningScope(passion);
+  return DAY_SKILLS[day] || [scope.fallbackSkill(day)];
+}
+
 const ALL_BADGES = [
   {id:"seed",   icon:"🌱",name:"The Seed",        desc:"Started Day 1",              day:1},
   {id:"spark",  icon:"⚡",name:"The SPARK",       desc:"Completed 5-Day Onramp",    day:5},
@@ -156,7 +167,7 @@ const css = `
 `;
 
 // ── Log day completion to backend ──
-async function logCompletion({ name, day, streak, skills, reflection }) {
+async function logCompletion({ name, day, streak, skills, reflection, competencyId, evidenceRequired, artifactDescriptor, lessonKey }) {
   try {
     await fetch("/api/log", {
       method: "POST",
@@ -167,6 +178,10 @@ async function logCompletion({ name, day, streak, skills, reflection }) {
         streak,
         skills,
         reflection,
+        competencyId,
+        evidenceRequired,
+        artifactDescriptor,
+        lessonKey,
         timestamp: new Date().toISOString(),
       }),
     });
@@ -380,11 +395,42 @@ export default function App() {
   });
   const goalLabel = passion.goalLabel || "Your Goal";
 
+  const [genDay1, setGenDay1] = useState(null);        // generated/approved Day 1 lesson
+  const [genDay1State, setGenDay1State] = useState("idle"); // idle | loading | ready | pending | fallback
+
   useEffect(() => {
     localStorage.setItem("p_passion", JSON.stringify(passion));
   }, [passion]);
 
-  const cur = getCurriculum(day);
+  useEffect(() => {
+    // Day 1 + flag on + we know the student's name. We call the endpoint for EVERY student —
+    // including general-track / placeholder passion — and let the SERVER decide the tier
+    // (Codex fix #2). Excluding low-confidence students here would dead-code the generic-track path.
+    if (!USE_GENERATED_DAY1 || day !== 1 || !userName) return;
+    let cancelled = false;
+    setGenDay1State("loading");
+    (async () => {
+      try {
+        const r = await fetch("/api/curriculum", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          // passion may be the real profile, the placeholder default, or null — server routes on confidence.
+          body: JSON.stringify({ studentName: userName, activeDay: 1, passion: passion || null }),
+        });
+        const lesson = await r.json();
+        if (cancelled) return;
+        if (lesson && (lesson.reviewStatus === "approved" || lesson.reviewStatus === "systemFallbackApproved")) {
+          setGenDay1(lesson); setGenDay1State(lesson.reviewStatus === "approved" ? "ready" : "fallback");
+        } else {
+          setGenDay1State("pending");   // personalized lesson generated but awaiting Lane approval
+        }
+      } catch {
+        if (!cancelled) setGenDay1State("idle"); // network error -> fall through to hardcoded Day 1
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [day, userName, passion]);
+
+  const cur = (day === 1 && genDay1) ? { ...getCurriculum(1), ...genDay1 } : getCurriculum(day);
   const hasOut = !!OUTSIDE_PROJECTS[day];
   const outDone = outside[day]?.submitted;
 
@@ -602,6 +648,14 @@ Only include fields that have NEW information from THIS conversation. Empty arra
           const newPassion = { ...d.passion, confidence: d.passion.confidence || 80 };
           setPassion(newPassion);
           localStorage.setItem("p_passion", JSON.stringify(newPassion));
+          // Pre-generate Day 1 so it's in Lane's review queue before the student clicks start.
+          // Fire-and-forget — never block the discovery synthesis on it.
+          if (USE_GENERATED_DAY1 && userName) {
+            fetch("/api/curriculum", {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ studentName: userName, activeDay: 1, passion: newPassion }),
+            }).catch(() => {});
+          }
           setDiscoveryMsgs(p => [...p, { role: "assistant", content: `🎯 I see it clearly — you're passionate about **${newPassion.domain}**, specifically **${newPassion.subDomain}**. Your goal: **${newPassion.goalLabel}**. \n\nYour own words say it best: "${newPassion.motivationAnchor}"\n\nThis is going to shape your entire 90-day journey. Every lesson, every project — built around what YOU care about. Ready to start?` }]);
           setDiscoveryStep(nextStep);
           setDiscoveryLoading(false);
@@ -631,6 +685,11 @@ Only include fields that have NEW information from THIS conversation. Empty arra
   }
 
   async function startSession() {
+    if (day === 1 && USE_GENERATED_DAY1 && genDay1State === "pending") {
+      setMsgs([{ role: "assistant", content: "Your Day 1 is being personalized to your passion right now — check back in a little bit and it'll be ready!" }]);
+      setScreen("session"); setPhase("chat"); setLoading(false);
+      return;
+    }
     setScreen("session"); setPhase("chat"); setMsgs([]); setReflection(""); setAffirmation(""); setOutText(""); setOutEval(""); setLoading(true);
     const ctx = await getCipherContext(cur.title);
     const mem = await loadStudentMemory();
@@ -729,8 +788,7 @@ Direct, technical, encouraging. Max 4 sentences unless detail is requested.`;
     if(!reflection.trim()) return;
     setLastReflection(reflection);
     setLoading(true);
-    const scope = getLearningScope(passion);
-    const ds = DAY_SKILLS[day]||[scope.fallbackSkill(day)];
+    const ds = getDaySkills(day, cur, passion);
     const memCtx = buildMemoryContext(studentMemory);
     const sys = `${memCtx}You are Cipher — ${userName}'s mentor. They answered their Day ${day} closing reflection: "${cur.title}".
 Their answer: "${reflection}"
@@ -760,14 +818,17 @@ Respond: (1) specifically validate what they got RIGHT — quote their exact wor
     setBadges(nb);
 
     // ── Log to backend ──
-    const scope = getLearningScope(passion);
-    const ds = DAY_SKILLS[completedDay] || [scope.fallbackSkill(completedDay)];
+    const ds = getDaySkills(completedDay, cur, passion);
     await logCompletion({
       name: userName,
       day: completedDay,
       streak: ns,
       skills: ds,
       reflection: lastReflection,
+      competencyId: cur.competencyId || null,
+      evidenceRequired: cur.evidenceRequired || null,
+      artifactDescriptor: cur.deliverable || null,
+      lessonKey: cur.lessonKey || null,
     });
 
     // ── Save conversation memory to Redis (async, don't block) ──
