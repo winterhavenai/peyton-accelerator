@@ -32,7 +32,7 @@ async function sendPassionEmail({ studentName, passion, answers }) {
     <div style="text-align:center;margin-top:24px;font-size:11px;color:#64748B;">WinterHaven.AI &middot; Passion-Powered Learning</div>
   </div>`;
   await resend.emails.send({
-    from: "onboarding@resend.dev",
+    from: process.env.EMAIL_FROM || "onboarding@resend.dev",
     to: PASSION_EMAIL,
     subject: `WinterHaven.AI - Passion Discovered: ${studentName} -> ${passion.goalLabel}`,
     html,

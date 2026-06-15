@@ -52,7 +52,7 @@ export default async function handler(req, res) {
 
 async function sendEmail(html, subject) {
     await resend.emails.send({
-          from: "onboarding@resend.dev",
+          from: process.env.EMAIL_FROM || "onboarding@resend.dev",
           to: SUMMARY_EMAIL,
           subject,
           html,

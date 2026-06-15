@@ -30,7 +30,7 @@ export default async function handler(req, res) {
       // DEGRADED — send alert email
       try {
         await resend.emails.send({
-          from: "onboarding@resend.dev",
+          from: process.env.EMAIL_FROM || "onboarding@resend.dev",
           to: ALERT_EMAIL,
           subject:
             "⚠️ TFM Health Check: cipherContext.json is empty or degraded",
